@@ -51,7 +51,7 @@
   <form method="post" action="{% url 'supprimer' jeton %}"
         onsubmit="return confirm('Supprimer définitivement vos candidatures et vos données ?')">
     {% csrf_token %}
-    <button type="submit">Retirer mes candidatures et supprimer mes données</button>
+    <button type="submit" class="danger">Retirer mes candidatures et supprimer mes données</button>
   </form>
 </section>
 {% endblock %}
