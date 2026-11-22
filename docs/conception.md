@@ -107,7 +107,7 @@ Tarifs et limites des offres gratuites à vérifier avant engagement.
 - **Information (art. 13)** sur le formulaire : finalité, destinataires (bureau APE, chef d'établissement), durée de conservation, droits (accès, rectification, effacement, retrait du consentement), contact.
 - **Conservation** : jusqu'à la fin de l'année scolaire, puis purge automatique. Candidats non retenus supprimables plus tôt.
 - **Sous-traitants** : Alwaysdata (hébergement, France) et Google (boîte Gmail de l'APE, déjà utilisée) ; DPA (art. 28) acceptés auprès de chacun.
-- **Accès** : admin réservé à 2–3 membres du bureau, avec 2FA (code par email). Pas d'export de fichiers envoyés par email.
+- **Accès** : admin réservé à 2–3 membres du bureau, avec 2FA (code par email). Export Excel des candidatures possible depuis l'admin (filtré par classe, niveau ou statut), pour usage interne : pas d'envoi de ces fichiers par email.
 - **Emails groupés** : destinataires en Cci, sauf entre parents délégués d'une même classe ayant consenti.
 - **Droits des personnes** : le parent peut consulter, modifier ou retirer sa candidature via son lien magique.
 

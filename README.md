@@ -25,6 +25,7 @@ Organisation du code :
 | Emplacement | Contenu |
 |---|---|
 | `portevoix/settings.py` | configuration (lue depuis `.env`) |
+| `portevoix/admin_site.py`, `representants/templates/admin/code.html` | connexion à l'admin : étape du code reçu par email |
 | `representants/models.py` | données : parents, classes, candidatures, adhérents |
 | `representants/services.py` | règles métier : attribution des places, emails, lien de l'espace parent |
 | `representants/views.py`, `urls.py`, `templates/` | pages publiques (accueil, formulaire, espace parent, lien perdu) |
@@ -51,6 +52,14 @@ L'admin (`/admin/`) se fait en deux étapes : identifiant et mot de passe, puis 
 | **Super-utilisateur** | tout, y compris les comptes administrateurs | 1 ou 2 personnes (technique, présidence), seules à avoir l'accès SSH aux commandes `make` |
 | **Groupe « Bureau »** (créé automatiquement) | parents, classes, candidatures, adhérents, niveaux ; pas de gestion des comptes | les autres membres du bureau |
 
+### Se connecter
+
+1. `/admin/` : identifiant et mot de passe.
+2. La page « Code de connexion » indique l'adresse à laquelle le code a été envoyé (objet : « [Porte-Voix] Code de connexion : 123456 »).
+3. Saisir le code puis **Valider**. Code expiré ou perdu : lien **Renvoyer un code** (au plus un par minute). Après un code erroné, attendre quelques secondes avant de réessayer (protection contre les essais au hasard).
+
+La sécurité de l'admin repose sur la boîte email de chaque administrateur : utiliser une adresse personnelle, non partagée, protégée par sa propre double authentification.
+
 ### Premier super-utilisateur (SSH)
 
 `make admin U=identifiant` : crée le super-utilisateur (renseigner son email : c'est là qu'arrive le code), puis se connecter sur `/admin/`.
@@ -65,8 +74,10 @@ Il change son mot de passe via le lien en haut de l'admin.
 
 ### Départ et incidents
 
+- **Export Excel des candidatures** : admin → *Candidatures*, filtrer (statut, niveau, classe) ou rechercher, puis **Exporter (Excel)** : le fichier contient exactement les candidatures affichées. Il contient des données personnelles : ne pas l'envoyer par email ni le conserver au-delà de l'usage.
 - **Départ du bureau** (à faire à chaque changement de bureau) : *Utilisateurs* → décocher **Actif**. Effet immédiat.
-- **Code non reçu** : vérifier les indésirables, puis l'adresse email du compte dans *Utilisateurs*.
+- **Code non reçu** : vérifier les indésirables, attendre une minute puis **Renvoyer un code** ; sinon un super-utilisateur vérifie l'adresse email du compte dans *Utilisateurs*.
+- **Envoi d'emails en panne** : plus personne ne peut se connecter à l'admin (ni recevoir de lien). En SSH, tester avec `.venv/bin/python manage.py sendtestemail mon@adresse.fr`, puis corriger les variables `EMAIL_*` du `.env` (ex. mot de passe d'application Gmail révoqué).
 - **Parent ayant perdu son lien** : l'orienter vers la page « Lien perdu ? » (`/lien-perdu/`, accessible depuis le formulaire), qui lui renvoie son lien par email.
 - **Sauvegarde / restauration** (SSH, dans `~/portevoix`) : `make backup` copie la base dans `backups/` ; `make restore F=backups/db-3.sqlite3` la remplace par une sauvegarde, après confirmation et après avoir sauvegardé la base actuelle (`backups/avant-restore-…`). Lancer ensuite `make migrate` si la sauvegarde date d'une version antérieure du code.
 - **Modifications manuelles** : changer un statut ou supprimer une candidature dans l'admin n'envoie pas d'email et ne promeut pas la liste d'attente. Pour un retrait, préférer que le parent utilise son espace personnel : bouton « Retirer » pour un enfant, ou suppression de toutes ses données ; la place libérée va alors au 1er de la liste d'attente, prévenu par email.
@@ -78,7 +89,7 @@ Il change son mot de passe via le lien en haut de l'admin.
 | Juin (ouverture) | vérifier les niveaux proposés (admin → *Niveaux*), puis partager l'URL du site (page d'accueil) |
 | Après chaque campagne d'adhésion | importer les adhérents (voir [Import des adhérents](#import-des-adhérents-csv)) |
 | Rentrée, classes connues | `make classes C="6A 6B 5A ... 2NDE1 1G1 TG1"` (le niveau est le code de niveau qui débute le nom, le plus long l'emportant : 2PRO1 → 2PRO) |
-| Rentrée | `make relance` |
+| Rentrée, une fois les classes créées | admin → *Parents* → **Relance de rentrée** : choisir un niveau (ou tous), vérifier la liste des parents ayant un enfant sans classe, puis envoyer leur lien (ou en SSH `make relance`, `make relance N=6`). Utile niveau par niveau quand les listes de classes sortent à des dates différentes ; relançable quelques jours plus tard pour les retardataires. |
 | Fin d'année | `make backup`, puis `make purge` |
 
 Les places sont attribuées automatiquement dès qu'un parent indique la classe. Une modification manuelle du statut dans l'admin n'envoie pas d'email.
@@ -129,7 +140,7 @@ cp .env.example .env && chmod 600 .env   # puis remplir .env
 
 ## Emails
 
-En dev (sans `EMAIL_HOST`), les emails s'affichent dans le terminal. En production, deux options : il suffit de changer les variables `EMAIL_*`.
+En dev (sans `EMAIL_HOST`), les emails s'affichent dans le terminal (codes de connexion à l'admin compris). En production, deux options : il suffit de changer les variables `EMAIL_*`. Les codes de connexion à l'admin passent par le même envoi que les emails aux parents.
 
 ### Gmail (choix actuel)
 

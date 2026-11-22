@@ -1,0 +1,31 @@
+{% extends "admin/base_site.html" %}
+{% block breadcrumbs %}<div class="breadcrumbs"><a href="{% url 'admin:index' %}">Accueil</a> › <a href="{% url 'admin:representants_parent_changelist' %}">Parents</a> › Relance de rentrée</div>{% endblock %}
+{% block content %}
+<form method="get">
+  <label for="niveau">Niveau :</label>
+  <select id="niveau" name="niveau" onchange="this.form.submit()">
+    <option value="">Tous les niveaux</option>
+    {% for n in niveaux %}<option value="{{ n.code }}" {% if n == niveau %}selected{% endif %}>{{ n }}</option>{% endfor %}
+  </select>
+  <noscript><input type="submit" value="Afficher"></noscript>
+</form>
+
+{% if not nb_classes %}
+  <p class="errornote">Aucune classe {% if niveau %}de {{ niveau }} {% endif %}n'est encore créée : les parents n'auraient rien à choisir. Créez d'abord les classes.</p>
+{% endif %}
+{% if parents %}
+  <p>Un email « Indiquez la classe de votre enfant », avec son lien personnel, va être envoyé à
+  <strong>{{ parents|length }} parent{{ parents|length|pluralize }}</strong> ayant au moins un enfant
+  {% if niveau %}de {{ niveau }} {% endif %}sans classe :</p>
+  <ul>{% for p in parents %}<li>{{ p.prenom }} {{ p.nom }} &lt;{{ p.email }}&gt;</li>{% endfor %}</ul>
+  <p>Chaque envoi renvoie un email à tous ces parents : espacez les relances de quelques jours.</p>
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="niveau" value="{{ niveau.code|default:'' }}">
+    <input type="submit" value="Envoyer la relance" {% if not nb_classes %}disabled{% endif %}>
+    <a href="{% url 'admin:representants_parent_changelist' %}" class="button cancel-link">Annuler</a>
+  </form>
+{% else %}
+  <p>Aucun parent à relancer{% if niveau %} en {{ niveau }}{% endif %} : tous les enfants ont une classe.</p>
+{% endif %}
+{% endblock %}

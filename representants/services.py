@@ -11,7 +11,7 @@ from django.db.models import Exists, OuterRef
 from django.template.loader import render_to_string
 from django.urls import reverse
 
-from .models import Adherent, Candidature, Classe
+from .models import Adherent, Candidature, Classe, Parent
 
 SIGNATAIRE = signing.Signer(salt="portevoix.espace")
 
@@ -99,3 +99,20 @@ def importer_adherents(contenu, remplacer=True, colonne=None, delimiteur=None):
         for classe in Classe.objects.all():
             attribuer(classe)
     return len(emails), colonne
+
+
+def parents_a_relancer(niveau=None):
+    """Parents dont au moins un enfant (du niveau donné, sinon de tout niveau) n'a pas encore de classe."""
+    filtre = dict(candidatures__classe__isnull=True, candidatures__statut=Candidature.CANDIDAT)
+    if niveau:
+        filtre["candidatures__niveau"] = niveau  # même candidature : un seul filter()
+    return Parent.objects.filter(**filtre).distinct()
+
+
+def relancer_rentree(niveau=None):
+    """Envoie à chacun son lien pour indiquer la classe. Renvoie le nombre d'emails envoyés."""
+    n = 0
+    for p in parents_a_relancer(niveau):
+        envoyer(p, "Indiquez la classe de votre enfant", "rentree")
+        n += 1
+    return n

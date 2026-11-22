@@ -38,8 +38,8 @@ classes: ## Crée des classes : make classes C="6A 6B 4D TG1"
 adherents: ## Importe les adhérents : make adherents F=adherents.csv
 	$(M) import_adherents $(F)
 
-relance: ## Envoie l'email de rentrée (affiché dans le terminal en dev)
-	$(M) relance_rentree
+relance: ## Envoie l'email de rentrée, tous niveaux ou un seul : make relance N=6
+	$(M) relance_rentree $(if $(N),--niveau "$(N)")
 
 purge: ## Purge annuelle (demande confirmation)
 	@read -p "Supprimer TOUTES les données ? [oui/N] " r && [ "$$r" = oui ] && $(M) purge_annuelle --oui

@@ -169,3 +169,56 @@ class ImportAdherentsTest(TestCase):
                              {"fichier": SimpleUploadedFile("a.csv", b"Email\nz@x.fr\n")}, follow=True)
         self.assertContains(r, "1 adhérents importés")
         self.assertTrue(Adherent.objects.filter(email="z@x.fr").exists())
+
+
+class RelanceAdminTest(TestCase):
+    def test_relance_depuis_l_admin(self):
+        from django.contrib.auth.models import User
+        from django_otp import DEVICE_ID_SESSION_KEY
+        from django_otp.plugins.otp_email.models import EmailDevice
+        user = User.objects.create_superuser("chef", "chef@ape.fr", "x")
+        self.client.force_login(user)
+        session = self.client.session
+        session[DEVICE_ID_SESSION_KEY] = EmailDevice.objects.create(user=user, name="email").persistent_id
+        session.save()
+        classe = Classe.objects.create(nom="4D", niveau_id="4")
+        a_relancer = candidat(1, None).parent
+        candidat(2, classe)  # a déjà une classe : pas relancé
+        url = reverse("admin:representants_parent_relance")
+        self.assertContains(self.client.get(url), a_relancer.email)
+        self.assertEqual(len(mail.outbox), 0)  # la page de confirmation n'envoie rien
+        r = self.client.post(url, follow=True)
+        self.assertContains(r, "Relance envoyée à 1 parent.")
+        self.assertEqual([m.to for m in mail.outbox], [[a_relancer.email]])
+
+    def test_relance_par_niveau(self):
+        en_6e = candidat(1, None)
+        Candidature.objects.filter(pk=en_6e.pk).update(niveau_id="6")
+        candidat(2, None)  # 4e
+        self.assertEqual(list(services.parents_a_relancer("6")), [en_6e.parent])
+        self.assertEqual(services.parents_a_relancer().count(), 2)
+        self.assertEqual(services.relancer_rentree("6"), 1)
+
+
+class ExportExcelTest(TestCase):
+    def test_export_filtre(self):
+        from io import BytesIO
+        from django.contrib.auth.models import User
+        from django_otp import DEVICE_ID_SESSION_KEY
+        from django_otp.plugins.otp_email.models import EmailDevice
+        from openpyxl import load_workbook
+        user = User.objects.create_superuser("chef", "chef@ape.fr", "x")
+        self.client.force_login(user)
+        session = self.client.session
+        session[DEVICE_ID_SESSION_KEY] = EmailDevice.objects.create(user=user, name="email").persistent_id
+        session.save()
+        classe = Classe.objects.create(nom="4D", niveau_id="4")
+        candidat(1, classe, adherent=True)
+        candidat(2, None)
+        url = reverse("admin:representants_candidature_export")
+        lignes = lambda r: list(load_workbook(BytesIO(r.content)).active.iter_rows(values_only=True))
+        self.assertEqual(len(lignes(self.client.get(url))), 3)  # en-tête + 2
+        filtre = lignes(self.client.get(url + f"?classe__id__exact={classe.pk}"))
+        self.assertEqual(len(filtre), 2)
+        self.assertEqual(filtre[1][:3], ("4e", "4D", "Candidat (classe inconnue)"))
+        self.assertEqual(filtre[1][8], "oui")  # adhérent
