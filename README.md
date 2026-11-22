@@ -73,6 +73,7 @@ L'admin (`/admin/`) exige un mot de passe **et** un code à 6 chiffres généré
 - **Départ du bureau** (à faire à chaque changement de bureau) : *Utilisateurs* → décocher **Actif**. Effet immédiat.
 - **Téléphone perdu** : supprimer son appareil dans *TOTP devices*, lui donner un nouveau code de première connexion, puis recommencer l'enregistrement.
 - **Parent ayant perdu son lien** : l'orienter vers la page « Lien perdu ? » (`/lien-perdu/`, accessible depuis le formulaire), qui lui renvoie son lien par email.
+- **Sauvegarde / restauration** (SSH, dans `~/portevoix`) : `make backup` copie la base dans `backups/` ; `make restore F=backups/db-3.sqlite3` la remplace par une sauvegarde, après confirmation et après avoir sauvegardé la base actuelle (`backups/avant-restore-…`). Lancer ensuite `make migrate` si la sauvegarde date d'une version antérieure du code.
 - **Modifications manuelles** : changer un statut ou supprimer une candidature dans l'admin n'envoie pas d'email et ne promeut pas la liste d'attente. Pour un retrait, préférer que le parent utilise son espace personnel : bouton « Retirer » pour un enfant, ou suppression de toutes ses données ; la place libérée va alors au 1er de la liste d'attente, prévenu par email.
 
 ## Calendrier annuel
@@ -83,7 +84,7 @@ L'admin (`/admin/`) exige un mot de passe **et** un code à 6 chiffres généré
 | Après chaque campagne d'adhésion | `make adherents F=adherents.csv` (colonne email détectée automatiquement) |
 | Rentrée, classes connues | `make classes C="6A 6B 5A ... 2NDE1 1G1 TG1"` (le 1er caractère donne le niveau) |
 | Rentrée | `make relance` |
-| Fin d'année | sauvegarde, puis `make purge` |
+| Fin d'année | `make backup`, puis `make purge` |
 
 Les places sont attribuées automatiquement dès qu'un parent indique la classe. Une modification manuelle du statut dans l'admin n'envoie pas d'email.
 
@@ -154,7 +155,7 @@ Quota de l'offre gratuite : 300 emails par jour (à vérifier). Mettre à jour l
 2. Par SSH, dans `~/portevoix` : créer `.env` (voir [Configuration](#configuration-variables-denvironnement)), puis `make deploy` (à relancer après chaque mise à jour du code ; nécessite `uv`, installable avec `pip install --user uv`).
 3. *Web → Sites → Ajouter* : type **Python WSGI**, application `~/portevoix/portevoix/wsgi.py`, virtualenv `~/portevoix/.venv`, répertoire de travail `~/portevoix`, chemin statique `/static/=staticfiles/`. Pas de variables d'environnement à saisir : elles viennent de `.env`.
 4. *Tâches planifiées* : sauvegarde quotidienne
-   `mkdir -p ~/portevoix/backups && sqlite3 ~/portevoix/db.sqlite3 ".backup ~/portevoix/backups/db-$(date +%u).sqlite3"`
+   `cd ~/portevoix && make -s backup F=backups/db-$(date +%u).sqlite3`
    (7 copies tournantes, une par jour de la semaine).
 
 Les libellés de l'interface Alwaysdata peuvent varier : vérifiez-les dans leur documentation.

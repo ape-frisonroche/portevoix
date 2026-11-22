@@ -1,7 +1,11 @@
 PY := .venv/bin/python
 M  := $(PY) manage.py
+# chemin de la base (DB_PATH du .env ou db.sqlite3), évalué seulement par backup/restore
+DB  = $(shell $(M) shell -v 0 -c "from django.conf import settings; print(settings.DATABASES['default']['NAME'])")
+# copie à chaud via l'API backup de SQLite (cohérente même si l'app tourne)
+COPIE := $(PY) -c "import sqlite3, sys; sqlite3.connect(sys.argv[1]).backup(sqlite3.connect(sys.argv[2]))"
 
-.PHONY: help install migrate migrations run test deploy admin classes adherents relance purge shell clean
+.PHONY: help install migrate migrations run test deploy admin classes adherents relance purge backup restore shell clean
 
 help: ## Affiche cette aide
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-12s %s\n", $$1, $$2}'
@@ -39,6 +43,16 @@ relance: ## Envoie l'email de rentrée (affiché dans le terminal en dev)
 
 purge: ## Purge annuelle (demande confirmation)
 	@read -p "Supprimer TOUTES les données ? [oui/N] " r && [ "$$r" = oui ] && $(M) purge_annuelle --oui
+
+backup: ## Sauvegarde la base dans backups/ (ou : make backup F=fichier.sqlite3)
+	@mkdir -p backups
+	$(COPIE) "$(DB)" "$(or $(F),backups/db-$(shell date +%Y%m%d-%H%M%S).sqlite3)"
+
+restore: ## Restaure une sauvegarde : make restore F=backups/db-....sqlite3 (demande confirmation)
+	@test -f "$(F)" || { echo "Fichier introuvable : make restore F=backups/..."; exit 1; }
+	@read -p "Remplacer la base par $(F) ? [oui/N] " r && [ "$$r" = oui ]
+	$(MAKE) -s backup F=backups/avant-restore-$(shell date +%Y%m%d-%H%M%S).sqlite3
+	$(COPIE) "$(F)" "$(DB)"
 
 shell: ## Shell Django
 	$(M) shell
