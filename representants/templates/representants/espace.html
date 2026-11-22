@@ -2,7 +2,7 @@
 {% block contenu %}
 <h1>Bonjour {{ parent.prenom }}</h1>
 <table>
-  <thead><tr><th>Enfant</th><th>Classe</th><th>Statut</th></tr></thead>
+  <thead><tr><th>Enfant</th><th>Classe</th><th>Statut</th><th></th></tr></thead>
   <tbody>
   {% for c in candidatures %}
     <tr>
@@ -24,6 +24,14 @@
         {% endif %}
       </td>
       <td>{{ c.get_statut_display }}</td>
+      <td>
+        <form method="post" action="{% url 'retirer' jeton %}"
+              onsubmit="return confirm('Retirer la candidature pour {{ c.prenom_enfant|escapejs }} ?')">
+          {% csrf_token %}
+          <input type="hidden" name="candidature" value="{{ c.pk }}">
+          <button type="submit">Retirer</button>
+        </form>
+      </td>
     </tr>
   {% endfor %}
   </tbody>

@@ -87,6 +87,21 @@ def choisir_classe(request, jeton):
 
 
 @require_POST
+def retirer(request, jeton):
+    """Retire la candidature d'un enfant et libère sa place."""
+    parent = _parent(jeton)
+    if parent is None:
+        return render(request, "representants/lien_invalide.html", status=400)
+    with transaction.atomic():
+        c = get_object_or_404(parent.candidatures.select_related("classe"), pk=request.POST.get("candidature"))
+        c.delete()
+        if c.classe:
+            services.attribuer(c.classe)  # promeut la liste d'attente
+    messages.success(request, f"Candidature retirée pour {c.prenom_enfant}.")
+    return redirect("espace", jeton=jeton)
+
+
+@require_POST
 def supprimer(request, jeton):
     """Droit à l'effacement : supprime le parent et libère ses places."""
     parent = _parent(jeton)

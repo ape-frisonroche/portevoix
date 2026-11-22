@@ -48,6 +48,20 @@ class AttributionTest(TestCase):
         self.assertEqual(statuts(*c[1:]), ["retenu"] * 4)
 
 
+    def test_retrait_d_un_enfant_par_le_parent(self):
+        c = [candidat(i, self.classe) for i in range(5)]
+        services.attribuer(self.classe)
+        jeton = services.lien_espace(c[0].parent).split("/espace/")[1].rstrip("/")
+        # un parent ne peut pas retirer la candidature d'un autre
+        r = self.client.post(reverse("retirer", args=[jeton]), {"candidature": c[1].pk})
+        self.assertEqual(r.status_code, 404)
+        with self.captureOnCommitCallbacks(execute=True):
+            self.client.post(reverse("retirer", args=[jeton]), {"candidature": c[0].pk})
+        self.assertFalse(Candidature.objects.filter(pk=c[0].pk).exists())
+        self.assertEqual(statuts(*c[1:]), ["retenu"] * 4)
+        self.assertIn("représentant de la 4D", mail.outbox[-1].subject)
+
+
 class ParcoursTest(TestCase):
     def test_candidature_puis_classe(self):
         r = self.client.post(reverse("candidature"), {
