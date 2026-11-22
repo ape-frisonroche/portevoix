@@ -16,7 +16,7 @@ from .models import Adherent, Candidature, Classe, Niveau, Parent
 class CandidatureInline(admin.TabularInline):
     model = Candidature
     extra = 0
-    fields = ["parent", "prenom_enfant", "niveau", "classe", "statut", "cree_le"]
+    fields = ["parent", "prenom_enfant", "nom_enfant", "niveau", "classe", "statut", "cree_le"]
     readonly_fields = ["cree_le"]
 
 
@@ -74,9 +74,9 @@ class ClasseAdmin(admin.ModelAdmin):
 
 @admin.register(Candidature)
 class CandidatureAdmin(admin.ModelAdmin):
-    list_display = ["parent", "prenom_enfant", "niveau", "classe", "statut", "cree_le"]
+    list_display = ["parent", "prenom_enfant", "nom_enfant", "niveau", "classe", "statut", "cree_le"]
     list_filter = ["statut", "niveau", "classe"]
-    search_fields = ["parent__nom", "parent__email", "prenom_enfant"]
+    search_fields = ["parent__nom", "parent__email", "prenom_enfant", "nom_enfant"]
     list_select_related = ["parent", "classe"]
     change_list_template = "admin/representants/candidature/change_list.html"
 
@@ -97,15 +97,15 @@ class CandidatureAdmin(admin.ModelAdmin):
         classeur = Workbook()
         feuille = classeur.active
         feuille.title = "Candidatures"
-        feuille.append(["Niveau", "Classe", "Statut", "Enfant", "Nom", "Prénom", "Email", "Téléphone",
+        feuille.append(["Niveau", "Classe", "Statut", "Prénom enfant", "Nom enfant", "Nom", "Prénom", "Email", "Téléphone",
                         "Adhérent", "Partage coordonnées", "Candidature le"])
         for c in candidatures:
             p = c.parent
-            feuille.append([str(c.niveau), str(c.classe or ""), c.get_statut_display(), c.prenom_enfant,
+            feuille.append([str(c.niveau), str(c.classe or ""), c.get_statut_display(), c.prenom_enfant, c.nom_enfant,
                             p.nom, p.prenom, p.email, p.telephone, "oui" if c.adherent else "non",
                             "oui" if p.partage_coordonnees else "non",
                             timezone.localtime(c.cree_le).replace(tzinfo=None)])
-        for colonne, largeur in zip("ABCDEFGHIJK", [10, 8, 22, 15, 18, 15, 30, 15, 9, 10, 18]):
+        for colonne, largeur in zip("ABCDEFGHIJKL", [10, 8, 22, 15, 18, 18, 15, 30, 15, 9, 10, 18]):
             feuille.column_dimensions[colonne].width = largeur
         feuille.freeze_panes = "A2"
         feuille.auto_filter.ref = feuille.dimensions

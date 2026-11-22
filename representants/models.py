@@ -74,6 +74,8 @@ class Candidature(models.Model):
 
     parent = models.ForeignKey(Parent, on_delete=models.CASCADE, related_name="candidatures")
     prenom_enfant = models.CharField("prénom de l'enfant", max_length=100)
+    # blank : candidatures enregistrées avant l'ajout du champ ; obligatoire dans les formulaires
+    nom_enfant = models.CharField("nom de l'enfant", max_length=100, blank=True)
     niveau = models.ForeignKey(Niveau, on_delete=models.PROTECT, related_name="candidatures")
     classe = models.ForeignKey(
         Classe, on_delete=models.PROTECT, null=True, blank=True, related_name="candidatures"
@@ -89,4 +91,8 @@ class Candidature(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.parent} pour {self.prenom_enfant} ({self.classe or self.niveau})"
+        return f"{self.parent} pour {self.enfant} ({self.classe or self.niveau})"
+
+    @property
+    def enfant(self):
+        return f"{self.prenom_enfant} {self.nom_enfant}".strip()

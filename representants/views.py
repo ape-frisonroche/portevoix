@@ -48,8 +48,9 @@ def lien_perdu(request):
 
 
 def _ajouter_enfant(parent, d):
-    if not parent.candidatures.filter(prenom_enfant__iexact=d["prenom_enfant"]).exists():
-        Candidature.objects.create(parent=parent, prenom_enfant=d["prenom_enfant"], niveau=d["niveau"])
+    if not parent.candidatures.filter(prenom_enfant__iexact=d["prenom_enfant"], nom_enfant__iexact=d["nom_enfant"]).exists():
+        Candidature.objects.create(parent=parent, prenom_enfant=d["prenom_enfant"], nom_enfant=d["nom_enfant"],
+                                   niveau=d["niveau"])
 
 
 def _parent(jeton):
@@ -79,7 +80,7 @@ def ajouter_enfant(request, jeton):
     form = EnfantForm(request.POST)
     if form.is_valid():
         _ajouter_enfant(parent, form.cleaned_data)
-        messages.success(request, f"Candidature ajoutée pour {form.cleaned_data['prenom_enfant']}.")
+        messages.success(request, f"Candidature ajoutée pour {form.cleaned_data['prenom_enfant']} {form.cleaned_data['nom_enfant']}.")
     return redirect("espace", jeton=jeton)
 
 
@@ -113,7 +114,7 @@ def retirer(request, jeton):
         c.delete()
         if c.classe:
             services.attribuer(c.classe)  # promeut la liste d'attente
-    messages.success(request, f"Candidature retirée pour {c.prenom_enfant}.")
+    messages.success(request, f"Candidature retirée pour {c.enfant}.")
     return redirect("espace", jeton=jeton)
 
 

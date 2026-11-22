@@ -77,7 +77,7 @@ class NiveauTest(TestCase):
 class ParcoursTest(TestCase):
     def test_candidature_puis_classe(self):
         r = self.client.post(reverse("candidature"), {
-            "prenom": "Ana", "nom": "B", "email": "Ana@X.fr", "prenom_enfant": "Léo",
+            "prenom": "Ana", "nom": "B", "email": "Ana@X.fr", "prenom_enfant": "Léo", "nom_enfant": "Martin",
             "niveau": "4", "consentement": "on",
         })
         self.assertEqual(r.status_code, 200)
@@ -96,9 +96,11 @@ class ParcoursTest(TestCase):
         lien = services.lien_espace(parent)
         self.assertEqual(lien, services.lien_espace(parent))  # stable d'un email à l'autre
         jeton = lien.split("/espace/")[1].rstrip("/")
-        for prenom in ("Léo", "Zoé", "léo"):  # doublon ignoré
-            self.client.post(reverse("ajouter_enfant", args=[jeton]), {"prenom_enfant": prenom, "niveau": "4"})
-        self.assertEqual(sorted(parent.candidatures.values_list("prenom_enfant", flat=True)), ["Léo", "Zoé"])
+        for prenom, nom in (("Léo", "Martin"), ("Zoé", "Martin"), ("léo", "MARTIN"), ("Léo", "Durand")):
+            self.client.post(reverse("ajouter_enfant", args=[jeton]),
+                             {"prenom_enfant": prenom, "nom_enfant": nom, "niveau": "4"})
+        # doublon ignoré (même prénom et nom), homonyme de prénom accepté
+        self.assertEqual(sorted(c.enfant for c in parent.candidatures.all()), ["Léo Durand", "Léo Martin", "Zoé Martin"])
 
     def test_lien_perdu(self):
         parent = Parent.objects.create(email="a@x.fr", prenom="A", nom="B", consentement_le=timezone.now())
@@ -221,4 +223,4 @@ class ExportExcelTest(TestCase):
         filtre = lignes(self.client.get(url + f"?classe__id__exact={classe.pk}"))
         self.assertEqual(len(filtre), 2)
         self.assertEqual(filtre[1][:3], ("4e", "4D", "Candidat (classe inconnue)"))
-        self.assertEqual(filtre[1][8], "oui")  # adhérent
+        self.assertEqual(filtre[1][9], "oui")  # adhérent

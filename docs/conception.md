@@ -42,7 +42,7 @@ Parent        email (unique), nom, prénom, téléphone (optionnel),
               consentement_le, partage_coordonnees (bool)
 Niveau        code (clé, ex. "4", "2PRO"), libellé, ordre — géré dans l'admin
 Classe        nom ("4D", unique), niveau → (code le plus long qui débute le nom)
-Candidature   parent →, prénom_enfant, niveau →, classe → (vide avant la rentrée),
+Candidature   parent →, prénom_enfant, nom_enfant, niveau →, classe → (vide avant la rentrée),
               statut [candidat | retenu | attente | retiré], date
               contrainte : (parent, classe) unique
 -- V3 --
@@ -50,12 +50,12 @@ Conseil       classe →, date
 Disponibilité conseil →, parent →, disponible (bool)
 ```
 
-- Une candidature porte directement l'enfant (prénom, niveau) : pas de table enfant séparée.
+- Une candidature porte directement l'enfant (prénom, nom, niveau) : pas de table enfant séparée.
 - Le statut d'adhérent est calculé à la volée en comparant l'email du parent à la table `Adherent` ; un parent inscrit après l'import est donc reconnu.
 - Le niveau suffit à distinguer collège (6e–3e) et lycée (2de–Terminale) : pas de table établissement.
 - Une seule année scolaire en base : la purge annuelle vide toutes les tables, pas de champ année.
 - Les classes sont créées par l'admin à la rentrée (commande `creer_classes`) ; le parent choisit la sienne dans une liste (pas de saisie libre, donc pas de fautes de frappe).
-- Données enfant minimisées : prénom, niveau, classe. Pas de date de naissance.
+- Données enfant minimisées : prénom, nom (peut différer de celui du parent ; distingue deux enfants de même prénom), niveau, classe. Pas de date de naissance.
 
 ## 5. Architecture
 
@@ -103,7 +103,7 @@ Tarifs et limites des offres gratuites à vérifier avant engagement.
 - **Base légale** : consentement, par cases à cocher non pré-cochées :
   1. candidature et traitement des données ;
   2. (distinct) transmission des coordonnées aux autres parents délégués de la classe et au chef d'établissement.
-- **Minimisation** : parent (nom, prénom, email, téléphone optionnel) ; enfant (prénom, niveau, classe).
+- **Minimisation** : parent (nom, prénom, email, téléphone optionnel) ; enfant (prénom, nom, niveau, classe).
 - **Information (art. 13)** sur le formulaire : finalité, destinataires (bureau APE, chef d'établissement), durée de conservation, droits (accès, rectification, effacement, retrait du consentement), contact.
 - **Conservation** : jusqu'à la fin de l'année scolaire, puis purge automatique. Candidats non retenus supprimables plus tôt.
 - **Sous-traitants** : Alwaysdata (hébergement, France) et Google (boîte Gmail de l'APE, déjà utilisée) ; DPA (art. 28) acceptés auprès de chacun.

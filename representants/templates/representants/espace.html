@@ -7,7 +7,7 @@
   <tbody>
   {% for c in candidatures %}
     <tr>
-      <td>{{ c.prenom_enfant }} ({{ c.niveau }})</td>
+      <td>{{ c.enfant }} ({{ c.niveau }})</td>
       <td>
         {% if c.classe %}{{ c.classe }}
         {% elif c.classes_possibles %}
@@ -27,7 +27,7 @@
       <td>{{ c.get_statut_display }}</td>
       <td>
         <form method="post" action="{% url 'retirer' jeton %}"
-              onsubmit="return confirm('Retirer la candidature pour {{ c.prenom_enfant|escapejs }} ?')">
+              onsubmit="return confirm('Retirer la candidature pour {{ c.enfant|escapejs }} ?')">
           {% csrf_token %}
           <input type="hidden" name="candidature" value="{{ c.pk }}">
           <button type="submit">Retirer</button>
