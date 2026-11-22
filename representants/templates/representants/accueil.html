@@ -1,12 +1,17 @@
 {% extends "representants/base.html" %}
+{% load static %}
+{% block logo_entete %}{% endblock %}{# le logo est affiché en grand sous l'en-tête #}
 {% block contenu %}
-<h1>Devenir parent représentant</h1>
+<div class="entete-accueil">
+  <img src="{% static 'representants/logo.svg' %}" alt="Logo de l'APE Frison-Roche" width="160" height="160">
+  <h1>Devenir parent délégué</h1>
+</div>
 <div class="grille">
 <section>
-<p>Les parents représentants siègent aux conseils de classe : ils y portent la voix des familles
+<p>Les parents délégués siègent aux conseils de classe : ils y portent la voix des familles
 et font le lien entre les parents de la classe et l'équipe pédagogique.</p>
-<p>Chaque classe compte au plus {{ places }} représentants. Les places vont d'abord aux adhérents de l'APE,
-puis par date de candidature. Un représentant retenu n'est jamais remplacé.</p>
+<p>Chaque classe compte au plus {{ places }} parents délégués. Les places vont d'abord aux adhérents de l'APE,
+puis par date de candidature. Un parent délégué retenu n'est jamais remplacé.</p>
 <p><a role="button" href="{% url 'candidature' %}">Candidater</a></p>
 <p>Déjà candidat ? <a href="{% url 'lien_perdu' %}">Retrouver mon lien personnel</a></p>
 </section>

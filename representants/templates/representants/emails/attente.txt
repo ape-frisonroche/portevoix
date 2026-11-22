@@ -1,6 +1,6 @@
 Bonjour {{ parent.prenom }},
 
-La classe {{ classe }} a déjà 4 parents représentants. Vous êtes sur liste
+La classe {{ classe }} a déjà 4 parents délégués. Vous êtes sur liste
 d'attente : vous serez prévenu par email si une place se libère.
 
 Votre espace : {{ lien }}

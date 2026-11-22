@@ -1,6 +1,6 @@
 # Porte-Voix
 
-Gestion des représentants des parents d'élèves de l'APE. Conception : [docs/conception.md](docs/conception.md).
+Gestion des parents délégués de l'APE. Conception : [docs/conception.md](docs/conception.md).
 
 ## Développement
 
@@ -29,7 +29,7 @@ Organisation du code :
 | `representants/services.py` | règles métier : attribution des places, emails, lien de l'espace parent |
 | `representants/views.py`, `urls.py`, `templates/` | pages publiques (accueil, formulaire, espace parent, lien perdu) |
 | `representants/templates/representants/base.html` | gabarit commun : en-tête, bouton clair/sombre, quelques règles CSS maison |
-| `representants/static/representants/` | Pico CSS (copie locale, ne pas remplacer par un CDN) |
+| `representants/static/representants/` | Pico CSS (copie locale, ne pas remplacer par un CDN), logo de l'APE (`logo.svg`, aussi icône d'onglet) |
 | `representants/admin.py` | interface d'administration |
 | `representants/management/commands/` | commandes `make` (import, relance, purge…) |
 | `representants/tests.py` | tests |

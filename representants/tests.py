@@ -61,7 +61,7 @@ class AttributionTest(TestCase):
             self.client.post(reverse("retirer", args=[jeton]), {"candidature": c[0].pk})
         self.assertFalse(Candidature.objects.filter(pk=c[0].pk).exists())
         self.assertEqual(statuts(*c[1:]), ["retenu"] * 4)
-        self.assertIn("représentant de la 4D", mail.outbox[-1].subject)
+        self.assertIn("parent délégué de la 4D", mail.outbox[-1].subject)
 
 
 class NiveauTest(TestCase):
@@ -89,7 +89,7 @@ class ParcoursTest(TestCase):
             self.client.post(reverse("choisir_classe", args=[lien]), {"candidature": cand.pk, "classe": classe.pk})
         cand.refresh_from_db()
         self.assertEqual((cand.classe, cand.statut), (classe, "retenu"))
-        self.assertIn("représentant de la 4D", mail.outbox[-1].subject)
+        self.assertIn("parent délégué de la 4D", mail.outbox[-1].subject)
 
     def test_un_lien_par_parent_pour_tous_ses_enfants(self):
         parent = Parent.objects.create(email="a@x.fr", prenom="A", nom="B", consentement_le=timezone.now())

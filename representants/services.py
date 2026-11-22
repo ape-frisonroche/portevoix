@@ -33,7 +33,7 @@ def envoyer(parent, sujet, gabarit, **contexte):
 def attribuer(classe):
     """Attribue les places libres d'une classe.
 
-    Un représentant retenu n'est jamais remplacé. Les places libres vont aux
+    Un parent délégué retenu n'est jamais remplacé. Les places libres vont aux
     adhérents d'abord, puis par date de candidature ; les autres vont en attente.
     """
     actives = classe.candidatures.select_for_update().exclude(statut=Candidature.RETIRE)
@@ -60,7 +60,7 @@ def notifier(candidature):
             c.parent for c in classe.candidatures.filter(statut=Candidature.RETENU, parent__partage_coordonnees=True)
             .exclude(pk=candidature.pk).select_related("parent")
         ]
-        envoyer(candidature.parent, f"Vous êtes représentant de la {classe}", "retenu",
+        envoyer(candidature.parent, f"Vous êtes parent délégué de la {classe}", "retenu",
                 classe=classe, collegues=collegues)
     elif candidature.statut == Candidature.ATTENTE:
         envoyer(candidature.parent, f"Liste d'attente pour la {classe}", "attente", classe=classe)

@@ -1,6 +1,6 @@
 Bonjour {{ parent.prenom }},
 
-Votre candidature comme parent représentant est enregistrée.
+Votre candidature comme parent délégué est enregistrée.
 
 Votre lien personnel (à conserver) :
 {{ lien }}

@@ -1,21 +1,21 @@
 # Porte-Voix — Conception
 
-*Porte-Voix* : application de gestion des représentants des parents d'élèves de l'APE. Nom technique du projet Django : `portevoix`.
+*Porte-Voix* : application de gestion des parents délégués de l'APE. Nom technique du projet Django : `portevoix`.
 
 ## 1. Objectif
 
-Automatiser la désignation des représentants des parents d'élèves (collège et lycée) pour supprimer les manipulations manuelles (tableurs, copier-coller, emails à la main), longues et sources d'erreurs.
+Automatiser la désignation des parents délégués (collège et lycée) pour supprimer les manipulations manuelles (tableurs, copier-coller, emails à la main), longues et sources d'erreurs.
 
 ## 2. Règles de gestion
 
 - Un parent peut se porter candidat pour un ou plusieurs de ses enfants.
 - Avant la rentrée, seul le **niveau** est connu (6e, 5e, 4e, 3e, 2de, 1re, Terminale par défaut ; liste modifiable dans l'admin, ex. niveaux professionnels) ; la **classe** (ex. 4D) est connue à la rentrée.
 - Un parent peut candidater à tout moment, y compris après la rentrée (même formulaire).
-- Un représentant doit avoir au moins un enfant dans la classe.
-- **Maximum 4 représentants par classe.**
+- Un parent délégué doit avoir au moins un enfant dans la classe.
+- **Maximum 4 parents délégués par classe.**
 - Si plus de 4 candidats : priorité aux **adhérents de l'APE**, puis à la **date de candidature**.
 - Les candidats non retenus sont placés en **liste d'attente**.
-- Un représentant retenu **n'est jamais remplacé** par un candidat arrivé plus tard, même adhérent ; le classement ne s'applique qu'aux places libres et à la liste d'attente.
+- Un parent délégué retenu **n'est jamais remplacé** par un candidat arrivé plus tard, même adhérent ; le classement ne s'applique qu'aux places libres et à la liste d'attente.
 - Le statut d'adhérent est **vérifié** par rapprochement de l'email avec la liste des adhérents (import CSV, ex. export HelloAsso), jamais auto-déclaré.
 - Pas de distinction titulaire / suppléant pour l'instant (ajout d'un champ possible plus tard).
 
@@ -27,12 +27,12 @@ Automatiser la désignation des représentants des parents d'élèves (collège 
 | Lien perdu | Parent | Page « Lien perdu ? » (`/lien-perdu/`) : le parent saisit son email et reçoit à nouveau son lien. Même réponse que l'email soit connu ou non (ne révèle pas qui est inscrit). |
 | Rentrée | Automatique | Email avec le lien : « indiquez la classe de votre enfant ». La classe est fournie par le parent, pas par l'établissement (évite un transfert de données). |
 | Attribution | Automatique | Dès qu'un enfant a une classe : moins de 4 retenus → *retenu*, sinon → *attente* (adhérents d'abord, puis par date). |
-| Notification | Automatique | Email « vous êtes représentant de la 4D » + coordonnées des autres représentants de la classe (si consentement) + lien vers le kit. Email aux candidats en attente. |
+| Notification | Automatique | Email « vous êtes parent délégué de la 4D » + coordonnées des autres parents délégués de la classe (si consentement) + lien vers le kit. Email aux candidats en attente. |
 | Retrait | Parent (via lien) ou administrateur | Parent : bouton « Retirer » par enfant dans son espace → la candidature est **supprimée** (pas de trace conservée, le parent peut se représenter) → promotion automatique du 1er de la liste d'attente, notifié par email. Administrateur : statut *retiré* dans l'admin (sans email ni promotion automatique). |
-| Conseil de classe (V3) | Admin saisit les dates | Alerte J-14 aux représentants → chacun indique sa disponibilité via son lien → l'admin voit qui siège. |
+| Conseil de classe (V3) | Admin saisit les dates | Alerte J-14 aux parents délégués → chacun indique sa disponibilité via son lien → l'admin voit qui siège. |
 | Fin d'année | Commande planifiée | Purge des données de l'année scolaire écoulée. |
 
-Le bureau de l'APE n'intervient que pour : importer le CSV des adhérents, créer la liste des classes à la rentrée, saisir les dates des conseils de classe, retirer un représentant si nécessaire.
+Le bureau de l'APE n'intervient que pour : importer le CSV des adhérents, créer la liste des classes à la rentrée, saisir les dates des conseils de classe, retirer un parent délégué si nécessaire.
 
 ## 4. Modèle de données
 
@@ -102,17 +102,17 @@ Tarifs et limites des offres gratuites à vérifier avant engagement.
 - **Responsable de traitement** : l'APE (représentée par sa présidence). Traitement inscrit au **registre des traitements**.
 - **Base légale** : consentement, par cases à cocher non pré-cochées :
   1. candidature et traitement des données ;
-  2. (distinct) transmission des coordonnées aux autres représentants de la classe et au chef d'établissement.
+  2. (distinct) transmission des coordonnées aux autres parents délégués de la classe et au chef d'établissement.
 - **Minimisation** : parent (nom, prénom, email, téléphone optionnel) ; enfant (prénom, niveau, classe).
 - **Information (art. 13)** sur le formulaire : finalité, destinataires (bureau APE, chef d'établissement), durée de conservation, droits (accès, rectification, effacement, retrait du consentement), contact.
 - **Conservation** : jusqu'à la fin de l'année scolaire, puis purge automatique. Candidats non retenus supprimables plus tôt.
 - **Sous-traitants** : Alwaysdata (hébergement, France) et Google (boîte Gmail de l'APE, déjà utilisée) ; DPA (art. 28) acceptés auprès de chacun.
 - **Accès** : admin réservé à 2–3 membres du bureau, avec 2FA. Pas d'export de fichiers envoyés par email.
-- **Emails groupés** : destinataires en Cci, sauf entre représentants d'une même classe ayant consenti.
+- **Emails groupés** : destinataires en Cci, sauf entre parents délégués d'une même classe ayant consenti.
 - **Droits des personnes** : le parent peut consulter, modifier ou retirer sa candidature via son lien magique.
 
 ## 8. Feuille de route
 
 1. **MVP** : formulaire de candidature, lien magique, saisie de la classe, attribution automatique, emails de nomination/attente, admin, import CSV adhérents, purge annuelle.
 2. **V2** : retrait par le parent avec promotion depuis la liste d'attente (fait), retrait admin avec promotion, diffusion du kit du parent délégué.
-3. **V3** : conseils de classe, saisie des disponibilités par les représentants, alertes avant chaque conseil.
+3. **V3** : conseils de classe, saisie des disponibilités par les parents délégués, alertes avant chaque conseil.

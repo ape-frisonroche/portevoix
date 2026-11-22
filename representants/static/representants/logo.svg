@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="APE Frison-Roche">
+  <title>APE Frison-Roche, association des parents d'élèves, Chamonix Mont-Blanc</title>
+  <defs>
+    <path id="haut" d="M21 100 A79 79 0 0 1 179 100"/>
+    <path id="bas" d="M11 100 A89 89 0 0 0 189 100"/>
+  </defs>
+  <circle cx="100" cy="100" r="98" fill="#2d2860"/>
+  <circle cx="100" cy="100" r="72" fill="#56b847"/>
+  <g font-family="system-ui, sans-serif" fill="#fff" text-anchor="middle">
+    <text font-size="17" font-weight="800" letter-spacing="2"><textPath href="#haut" startOffset="50%">APE FRISON-ROCHE</textPath></text>
+    <text font-size="12" font-weight="600" letter-spacing="1.5" fill="#bfe6b6"><textPath href="#bas" startOffset="50%">CHAMONIX MONT-BLANC</textPath></text>
+  </g>
+  <circle cx="14" cy="100" r="3" fill="#56b847"/>
+  <circle cx="186" cy="100" r="3" fill="#56b847"/>
+  <path d="M42 140 L70 102 L83 115 L114 70 L144 103 L152 94 L163 109 Q112 134 42 140 Z" fill="#fff"/>
+  <path d="M114 70 L144 103 L152 94 L163 109 Q140 121 117 127 L123 99 Z" fill="#d6efd0"/>
+</svg>
