@@ -48,7 +48,7 @@ L'admin (`/admin/`) exige un mot de passe **et** un code à 6 chiffres généré
 
 - **Départ du bureau** (à faire à chaque changement de bureau) : *Utilisateurs* → décocher **Actif**. Effet immédiat.
 - **Téléphone perdu** : supprimer son appareil dans *TOTP devices*, lui donner un nouveau code de première connexion, puis recommencer l'enregistrement.
-- **Modifications manuelles** : changer un statut ou supprimer une candidature dans l'admin n'envoie pas d'email et ne promeut pas la liste d'attente. Pour une demande de suppression d'un parent, préférer lui faire utiliser le bouton de son espace personnel.
+- **Modifications manuelles** : changer un statut ou supprimer une candidature dans l'admin n'envoie pas d'email et ne promeut pas la liste d'attente. Pour un retrait, préférer que le parent utilise son espace personnel : bouton « Retirer » pour un enfant, ou suppression de toutes ses données ; la place libérée va alors au 1er de la liste d'attente, prévenu par email.
 
 ## Calendrier annuel
 

@@ -27,7 +27,7 @@ Automatiser la désignation des représentants des parents d'élèves (collège 
 | Rentrée | Automatique | Email avec le lien : « indiquez la classe de votre enfant ». La classe est fournie par le parent, pas par l'établissement (évite un transfert de données). |
 | Attribution | Automatique | Dès qu'un enfant a une classe : moins de 4 retenus → *retenu*, sinon → *attente* (adhérents d'abord, puis par date). |
 | Notification | Automatique | Email « vous êtes représentant de la 4D » + coordonnées des autres représentants de la classe (si consentement) + lien vers le kit. Email aux candidats en attente. |
-| Retrait | Parent (via lien) ou administrateur | Statut *retiré* (motif : volontaire / admin) → promotion automatique du 1er de la liste d'attente, notifié par email. |
+| Retrait | Parent (via lien) ou administrateur | Parent : bouton « Retirer » par enfant dans son espace → la candidature est **supprimée** (pas de trace conservée, le parent peut se représenter) → promotion automatique du 1er de la liste d'attente, notifié par email. Administrateur : statut *retiré* dans l'admin (sans email ni promotion automatique). |
 | Conseil de classe (V3) | Admin saisit les dates | Alerte J-14 aux représentants → chacun indique sa disponibilité via son lien → l'admin voit qui siège. |
 | Fin d'année | Commande planifiée | Purge des données de l'année scolaire écoulée. |
 
@@ -43,8 +43,6 @@ Classe        nom ("4D", unique), niveau (déduit du 1er caractère)
 Candidature   parent →, prénom_enfant, niveau, classe → (vide avant la rentrée),
               statut [candidat | retenu | attente | retiré], date
               contrainte : (parent, classe) unique
--- V2 --
-Candidature   + motif_retrait [volontaire | admin]
 -- V3 --
 Conseil       classe →, date
 Disponibilité conseil →, parent →, disponible (bool)
@@ -113,5 +111,5 @@ Tarifs et limites des offres gratuites à vérifier avant engagement.
 ## 8. Feuille de route
 
 1. **MVP** : formulaire de candidature, lien magique, saisie de la classe, attribution automatique, emails de nomination/attente, admin, import CSV adhérents, purge annuelle.
-2. **V2** : retrait (volontaire / admin) avec promotion depuis la liste d'attente, diffusion du kit du parent délégué.
+2. **V2** : retrait par le parent avec promotion depuis la liste d'attente (fait), retrait admin avec promotion, diffusion du kit du parent délégué.
 3. **V3** : conseils de classe, saisie des disponibilités par les représentants, alertes avant chaque conseil.
