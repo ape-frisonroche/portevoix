@@ -65,6 +65,7 @@ Disponibilité conseil →, parent →, disponible (bool)
 | Authentification parents | **Lien magique** via `django.core.signing` (natif) | Pas de mot de passe, email vérifié, aucune dépendance. |
 | Authentification admin | Admin Django + **2FA** (`django-otp`) | Seule dépendance ajoutée, justifiée par les données de mineurs. |
 | Emails | **SMTP Gmail** du compte de l'APE (mot de passe d'application) | L'adresse d'expédition est en `@gmail.com` : seul Gmail peut l'envoyer sans tomber en spam (DMARC). Gratuit, ~500 emails/jour. |
+| Style des pages | **Pico CSS** (version *classless*), copié dans le projet | Rendu soigné sans classes à écrire ; thème clair/sombre (réglage de l'appareil, ou bouton mémorisé dans le navigateur). Servi localement : aucune requête vers un CDN, donc pas d'adresse IP des parents transmise à un tiers. |
 | Tâches planifiées | Commandes `manage.py` lancées par cron | Relance rentrée, alertes conseils, sauvegarde, purge. |
 | Kit du parent délégué | PDF statique, lien dans l'email de nomination | Pas de gestion documentaire. |
 

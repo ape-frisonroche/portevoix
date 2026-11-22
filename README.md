@@ -28,6 +28,8 @@ Organisation du code :
 | `representants/models.py` | données : parents, classes, candidatures, adhérents |
 | `representants/services.py` | règles métier : attribution des places, emails, lien de l'espace parent |
 | `representants/views.py`, `urls.py`, `templates/` | pages publiques (accueil, formulaire, espace parent, lien perdu) |
+| `representants/templates/representants/base.html` | gabarit commun : en-tête, bouton clair/sombre, quelques règles CSS maison |
+| `representants/static/representants/` | Pico CSS (copie locale, ne pas remplacer par un CDN) |
 | `representants/admin.py` | interface d'administration |
 | `representants/management/commands/` | commandes `make` (import, relance, purge…) |
 | `representants/tests.py` | tests |
@@ -36,6 +38,7 @@ Modifications courantes :
 
 - **Dépendances** : `uv add <paquet>` (met à jour `pyproject.toml` et `uv.lock`, à commiter tous les deux).
 - **Modèles** (`models.py`) : `make migrations` puis `make migrate`, et commiter le fichier de migration généré.
+- **Style** : Pico CSS met en forme le HTML sans classes ; pour un réglage, ajouter une règle dans le `<style>` de `base.html` en utilisant ses variables (`var(--pico-…)`) pour rester compatible clair/sombre. Mettre à jour Pico : remplacer le fichier par la version *classless* (`pico.classless.min.css`) d'une nouvelle version.
 - **Version** : champ `version` de `pyproject.toml`.
 - **CI** : GitHub Actions (`.github/workflows/ci.yml`) lance les tests et vérifie qu'aucune migration ne manque à chaque push sur `main` et à chaque pull request.
 
