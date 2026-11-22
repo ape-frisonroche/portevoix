@@ -1,0 +1,11 @@
+Bonjour {{ parent.prenom }},
+
+Votre candidature comme parent représentant est enregistrée.
+
+Votre lien personnel (à conserver) :
+{{ lien }}
+
+Il vous permet d'indiquer la classe de votre enfant à la rentrée, de suivre
+votre candidature et de supprimer vos données.
+
+L'APE

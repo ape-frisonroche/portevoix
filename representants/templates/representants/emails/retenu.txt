@@ -1,0 +1,12 @@
+Bonjour {{ parent.prenom }},
+
+Vous êtes parent représentant de la classe {{ classe }}. Merci pour votre engagement !
+{% if collegues %}
+Les autres représentants de la classe :
+{% for p in collegues %}- {{ p.prenom }} {{ p.nom }} <{{ p.email }}>{% if p.telephone %} {{ p.telephone }}{% endif %}
+{% endfor %}{% endif %}{% if kit_url %}
+Le kit du parent délégué : {{ kit_url }}
+{% endif %}
+Votre espace : {{ lien }}
+
+L'APE

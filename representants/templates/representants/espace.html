@@ -1,0 +1,42 @@
+{% extends "representants/base.html" %}
+{% block contenu %}
+<h1>Bonjour {{ parent.prenom }}</h1>
+<table>
+  <thead><tr><th>Enfant</th><th>Classe</th><th>Statut</th></tr></thead>
+  <tbody>
+  {% for c in candidatures %}
+    <tr>
+      <td>{{ c.prenom_enfant }} ({{ c.get_niveau_display }})</td>
+      <td>
+        {% if c.classe %}{{ c.classe }}
+        {% elif c.classes_possibles %}
+          <form method="post" action="{% url 'choisir_classe' jeton %}">
+            {% csrf_token %}
+            <input type="hidden" name="candidature" value="{{ c.pk }}">
+            <label for="classe-{{ c.pk }}">Classe à la rentrée</label>
+            <select id="classe-{{ c.pk }}" name="classe" required>
+              <option value="">—</option>
+              {% for k in c.classes_possibles %}<option value="{{ k.pk }}">{{ k }}</option>{% endfor %}
+            </select>
+            <button type="submit">Valider</button>
+          </form>
+        {% else %}<em>Classes pas encore connues : vous serez prévenu à la rentrée.</em>
+        {% endif %}
+      </td>
+      <td>{{ c.get_statut_display }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<p><a href="{% url 'candidature' %}">Candidater pour un autre enfant</a></p>
+
+<section class="rgpd">
+  <p>Email : {{ parent.email }} · Téléphone : {{ parent.telephone|default:"—" }} ·
+  Partage des coordonnées : {{ parent.partage_coordonnees|yesno:"oui,non" }}</p>
+  <form method="post" action="{% url 'supprimer' jeton %}"
+        onsubmit="return confirm('Supprimer définitivement vos candidatures et vos données ?')">
+    {% csrf_token %}
+    <button type="submit">Retirer mes candidatures et supprimer mes données</button>
+  </form>
+</section>
+{% endblock %}

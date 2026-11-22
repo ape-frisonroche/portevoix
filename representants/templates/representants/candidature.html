@@ -1,0 +1,21 @@
+{% extends "representants/base.html" %}
+{% block contenu %}
+<h1>Devenir parent représentant</h1>
+<p>Candidatez pour la classe de votre enfant. Avant la rentrée, indiquez seulement son niveau :
+vous recevrez un lien pour préciser la classe à la rentrée.
+Plusieurs enfants ? Remplissez le formulaire une fois par enfant.</p>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Envoyer ma candidature</button>
+</form>
+<section class="rgpd">
+  <p><strong>Données personnelles.</strong> Responsable du traitement : l'APE, représentée par sa présidence.
+  Finalité : désignation des représentants des parents d'élèves aux conseils de classe.
+  Destinataires : le bureau de l'APE ; le chef d'établissement et les autres représentants de la classe uniquement si vous l'acceptez.
+  Les places (4 par classe) sont attribuées en priorité aux adhérents de l'APE, puis par date de candidature.
+  Conservation : jusqu'à la fin de l'année scolaire, puis suppression.
+  Vous pouvez consulter, corriger ou supprimer vos données à tout moment via le lien reçu par email,
+  ou en écrivant à {{ contact }}.</p>
+</section>
+{% endblock %}

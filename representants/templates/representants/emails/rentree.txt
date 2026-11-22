@@ -1,0 +1,8 @@
+Bonjour {{ parent.prenom }},
+
+C'est la rentrée : merci d'indiquer la classe de votre enfant pour finaliser
+votre candidature de parent représentant.
+
+{{ lien }}
+
+L'APE
