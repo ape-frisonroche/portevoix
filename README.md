@@ -133,3 +133,7 @@ Quota de l'offre gratuite : 300 emails par jour (à vérifier). Mettre à jour l
    (7 copies tournantes, une par jour de la semaine).
 
 Les libellés de l'interface Alwaysdata peuvent varier : vérifiez-les dans leur documentation.
+
+## Licence
+
+Ce projet est distribué sous licence [GNU GPL v3](LICENSE).
