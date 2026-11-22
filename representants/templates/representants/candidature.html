@@ -4,6 +4,7 @@
 <p>Candidatez pour la classe de votre enfant. Avant la rentrée, indiquez seulement son niveau :
 vous recevrez un lien pour préciser la classe à la rentrée.
 Plusieurs enfants ? Ajoutez les autres depuis votre espace personnel (lien reçu par email).</p>
+<p>Déjà candidat ? <a href="{% url 'lien_perdu' %}">Retrouver mon lien personnel</a></p>
 <form method="post">
   {% csrf_token %}
   {{ form.as_p }}

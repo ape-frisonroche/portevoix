@@ -1,0 +1,16 @@
+{% extends "representants/base.html" %}
+{% block contenu %}
+<h1>Lien perdu ?</h1>
+{% if envoye %}
+<p>Si <strong>{{ email }}</strong> correspond à une candidature, un email contenant votre lien personnel vient d'y être envoyé.
+Pensez à vérifier vos indésirables.</p>
+{% else %}
+<p>Indiquez l'email utilisé pour votre candidature : nous vous renverrons votre lien personnel.</p>
+<form method="post">
+  {% csrf_token %}
+  <label for="email">Votre email</label>
+  <input type="email" id="email" name="email" required autocomplete="email">
+  <button type="submit">Recevoir mon lien</button>
+</form>
+{% endif %}
+{% endblock %}

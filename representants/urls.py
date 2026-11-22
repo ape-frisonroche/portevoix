@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     path("", views.candidature, name="candidature"),
+    path("lien-perdu/", views.lien_perdu, name="lien_perdu"),
     path("espace/<str:jeton>/", views.espace, name="espace"),
     path("espace/<str:jeton>/classe/", views.choisir_classe, name="choisir_classe"),
     path("espace/<str:jeton>/enfant/", views.ajouter_enfant, name="ajouter_enfant"),

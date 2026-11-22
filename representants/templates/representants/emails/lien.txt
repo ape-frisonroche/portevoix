@@ -1,0 +1,11 @@
+Bonjour {{ parent.prenom }},
+
+Voici votre lien personnel Porte-Voix (à conserver) :
+{{ lien }}
+
+Il vous permet de suivre vos candidatures, d'indiquer la classe de vos enfants
+et de supprimer vos données.
+
+Si vous n'avez pas demandé ce lien, ignorez cet email.
+
+L'APE

@@ -1,5 +1,5 @@
 {% extends "representants/base.html" %}
 {% block contenu %}
 <h1>Lien invalide ou expiré</h1>
-<p><a href="{% url 'candidature' %}">Refaites une candidature</a> pour recevoir un nouveau lien.</p>
+<p><a href="{% url 'lien_perdu' %}">Recevoir à nouveau mon lien</a> ou <a href="{% url 'candidature' %}">faire une candidature</a>.</p>
 {% endblock %}

@@ -31,6 +31,18 @@ def candidature(request):
                   {"form": form, "contact": settings.CONTACT_RGPD})
 
 
+def lien_perdu(request):
+    """Renvoie le lien de l'espace. Même réponse que l'email soit connu ou non."""
+    email = request.POST.get("email", "").strip()
+    if request.method == "POST" and email:
+        # ponytail: pas de limite d'envois, comme le formulaire de candidature ; à ajouter en cas d'abus
+        parent = Parent.objects.filter(email__iexact=email).first()
+        if parent:
+            services.envoyer(parent, "Votre lien personnel", "lien")
+        return render(request, "representants/lien_perdu.html", {"email": email, "envoye": True})
+    return render(request, "representants/lien_perdu.html")
+
+
 def _ajouter_enfant(parent, d):
     if not parent.candidatures.filter(prenom_enfant__iexact=d["prenom_enfant"]).exists():
         Candidature.objects.create(parent=parent, prenom_enfant=d["prenom_enfant"], niveau=d["niveau"])

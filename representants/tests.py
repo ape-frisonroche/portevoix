@@ -88,6 +88,15 @@ class ParcoursTest(TestCase):
             self.client.post(reverse("ajouter_enfant", args=[jeton]), {"prenom_enfant": prenom, "niveau": "4"})
         self.assertEqual(sorted(parent.candidatures.values_list("prenom_enfant", flat=True)), ["Léo", "Zoé"])
 
+    def test_lien_perdu(self):
+        parent = Parent.objects.create(email="a@x.fr", prenom="A", nom="B", consentement_le=timezone.now())
+        connu = self.client.post(reverse("lien_perdu"), {"email": " A@X.fr "})
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn(services.lien_espace(parent), mail.outbox[0].body)
+        inconnu = self.client.post(reverse("lien_perdu"), {"email": "z@x.fr"})
+        self.assertEqual(len(mail.outbox), 1)  # rien envoyé, même page affichée
+        self.assertEqual(connu.content.replace(b"A@X.fr", b""), inconnu.content.replace(b"z@x.fr", b""))
+
     def test_groupe_bureau(self):
         from django.contrib.auth.models import Group
         perms = set(Group.objects.get(name="Bureau").permissions.values_list("codename", flat=True))
