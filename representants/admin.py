@@ -1,4 +1,10 @@
-from django.contrib import admin
+from django import forms
+from django.contrib import admin, messages
+from django.shortcuts import redirect
+from django.template.response import TemplateResponse
+from django.urls import path
+
+from . import services
 
 from .models import Adherent, Candidature, Classe, Niveau, Parent
 
@@ -44,7 +50,39 @@ class CandidatureAdmin(admin.ModelAdmin):
     list_select_related = ["parent", "classe"]
 
 
-admin.site.register(Adherent, search_fields=["email"])
+class ImportAdherentsForm(forms.Form):
+    fichier = forms.FileField(label="Fichier CSV", help_text="Ex. export HelloAsso. La colonne dont le nom contient « mail » est utilisée.")
+    remplacer = forms.BooleanField(
+        label="Remplacer toute la liste (sinon les emails sont ajoutés aux adhérents existants)", required=False,
+    )
+
+
+@admin.register(Adherent)
+class AdherentAdmin(admin.ModelAdmin):
+    search_fields = ["email"]
+    change_list_template = "admin/representants/adherent/change_list.html"
+
+    def get_urls(self):
+        vue = self.admin_site.admin_view(self.importer)
+        return [path("importer/", vue, name="representants_adherent_importer")] + super().get_urls()
+
+    def importer(self, request):
+        if not self.has_add_permission(request):
+            return redirect("admin:representants_adherent_changelist")
+        form = ImportAdherentsForm(request.POST or None, request.FILES or None)
+        if form.is_valid():
+            try:
+                n, colonne = services.importer_adherents(
+                    form.cleaned_data["fichier"].read(), remplacer=form.cleaned_data["remplacer"])
+            except ValueError as e:
+                form.add_error("fichier", str(e))
+            else:
+                messages.success(request, f"{n} adhérents importés (colonne « {colonne} »). Places réattribuées.")
+                return redirect("admin:representants_adherent_changelist")
+        return TemplateResponse(request, "admin/representants/adherent/importer.html", {
+            **self.admin_site.each_context(request), "form": form, "opts": self.model._meta,
+            "title": "Importer des adhérents (CSV)",
+        })
 
 
 @admin.register(Niveau)

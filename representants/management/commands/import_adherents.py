@@ -1,10 +1,6 @@
-import csv
-
 from django.core.management.base import BaseCommand, CommandError
-from django.db import transaction
 
 from representants import services
-from representants.models import Adherent, Classe
 
 
 class Command(BaseCommand):
@@ -16,19 +12,9 @@ class Command(BaseCommand):
         parser.add_argument("--delimiteur", default=None, help="détecté automatiquement si absent")
 
     def handle(self, fichier, colonne, delimiteur, **_):
-        with open(fichier, newline="", encoding="utf-8-sig") as f:
-            echantillon = f.read(4096)
-            f.seek(0)
-            delim = delimiteur or csv.Sniffer().sniff(echantillon, delimiters=",;\t").delimiter
-            lecteur = csv.DictReader(f, delimiter=delim)
-            colonne = colonne or next((c for c in lecteur.fieldnames if "mail" in c.lower()), None)
-            if colonne not in (lecteur.fieldnames or []):
-                raise CommandError(f"Colonne email introuvable dans : {lecteur.fieldnames}")
-            emails = {l[colonne].strip().lower() for l in lecteur if "@" in (l[colonne] or "")}
-
-        with transaction.atomic():
-            Adherent.objects.all().delete()
-            Adherent.objects.bulk_create(Adherent(email=e) for e in emails)
-            for classe in Classe.objects.all():
-                services.attribuer(classe)
-        self.stdout.write(self.style.SUCCESS(f"{len(emails)} adhérents importés (colonne « {colonne} »)."))
+        with open(fichier, "rb") as f:
+            try:
+                n, colonne = services.importer_adherents(f.read(), colonne=colonne, delimiteur=delimiteur)
+            except ValueError as e:
+                raise CommandError(e)
+        self.stdout.write(self.style.SUCCESS(f"{n} adhérents importés (colonne « {colonne} »)."))

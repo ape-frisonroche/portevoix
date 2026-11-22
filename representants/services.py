@@ -1,4 +1,7 @@
-"""Règles métier : attribution des places et emails."""
+"""Règles métier : attribution des places, emails, import des adhérents."""
+
+import csv
+import io
 
 from django.conf import settings
 from django.core import signing
@@ -8,7 +11,7 @@ from django.db.models import Exists, OuterRef
 from django.template.loader import render_to_string
 from django.urls import reverse
 
-from .models import Adherent, Candidature
+from .models import Adherent, Candidature, Classe
 
 SIGNATAIRE = signing.Signer(salt="portevoix.espace")
 
@@ -64,3 +67,35 @@ def notifier(candidature):
                 classe=classe, collegues=collegues)
     elif candidature.statut == Candidature.ATTENTE:
         envoyer(candidature.parent, f"Liste d'attente pour la {classe}", "attente", classe=classe)
+
+
+def importer_adherents(contenu, remplacer=True, colonne=None, delimiteur=None):
+    """Importe les emails d'un CSV (ex. export HelloAsso) et réattribue les places.
+
+    `contenu` : octets du fichier (UTF-8 ou encodage Excel Windows). La colonne email est la
+    première dont le nom contient « mail », sauf si `colonne` est donnée.
+    Renvoie (nombre d'emails du fichier, colonne utilisée) ; ValueError si pas de colonne email.
+    """
+    try:
+        texte = contenu.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        texte = contenu.decode("cp1252")
+    if not delimiteur:
+        try:
+            delimiteur = csv.Sniffer().sniff(texte[:4096], delimiters=",;\t").delimiter
+        except csv.Error:  # une seule colonne
+            delimiteur = ","
+    lecteur = csv.DictReader(io.StringIO(texte), delimiter=delimiteur)
+    champs = lecteur.fieldnames or []
+    colonne = colonne or next((c for c in champs if "mail" in c.lower()), None)
+    if colonne not in champs:
+        raise ValueError(f"Colonne email introuvable dans : {', '.join(champs) or '(fichier vide)'}")
+    emails = {l[colonne].strip().lower() for l in lecteur if "@" in (l[colonne] or "")}
+
+    with transaction.atomic():
+        if remplacer:
+            Adherent.objects.all().delete()
+        Adherent.objects.bulk_create((Adherent(email=e) for e in emails), ignore_conflicts=True)
+        for classe in Classe.objects.all():
+            attribuer(classe)
+    return len(emails), colonne

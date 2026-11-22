@@ -141,3 +141,31 @@ class AdminCodeEmailTest(TestCase):
         EmailDevice.objects.update(throttling_failure_count=0)  # lève le délai anti-force brute
         self.client.post(reverse("admin:code") + "?next=/admin/", {"code": code})
         self.assertEqual(self.client.get("/admin/").status_code, 200)
+
+
+class ImportAdherentsTest(TestCase):
+    def test_import_csv(self):
+        n, col = services.importer_adherents("Nom;E-mail\nAndré;A@x.fr\nB;b@x.fr\n".encode("cp1252"))
+        self.assertEqual((n, col), (2, "E-mail"))
+        services.importer_adherents(b"email\nc@x.fr\n", remplacer=False)  # ajout, une seule colonne
+        self.assertEqual(sorted(Adherent.objects.values_list("email", flat=True)), ["a@x.fr", "b@x.fr", "c@x.fr"])
+        services.importer_adherents(b"email\nc@x.fr\n", remplacer=True)
+        self.assertEqual(Adherent.objects.count(), 1)
+        with self.assertRaises(ValueError):
+            services.importer_adherents(b"nom\nX\n")
+
+    def test_import_depuis_l_admin(self):
+        from django.contrib.auth.models import User
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from django_otp import DEVICE_ID_SESSION_KEY
+        from django_otp.plugins.otp_email.models import EmailDevice
+        user = User.objects.create_superuser("chef", "chef@ape.fr", "x")
+        self.client.force_login(user)
+        session = self.client.session
+        session[DEVICE_ID_SESSION_KEY] = EmailDevice.objects.create(user=user, name="email").persistent_id
+        session.save()
+        self.assertContains(self.client.get(reverse("admin:representants_adherent_changelist")), "Importer un CSV")
+        r = self.client.post(reverse("admin:representants_adherent_importer"),
+                             {"fichier": SimpleUploadedFile("a.csv", b"Email\nz@x.fr\n")}, follow=True)
+        self.assertContains(r, "1 adhérents importés")
+        self.assertTrue(Adherent.objects.filter(email="z@x.fr").exists())

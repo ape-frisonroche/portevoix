@@ -76,7 +76,7 @@ Il change son mot de passe via le lien en haut de l'admin.
 | Quand | Commande |
 |---|---|
 | Juin (ouverture) | vérifier les niveaux proposés (admin → *Niveaux*), puis partager l'URL du site (page d'accueil) |
-| Après chaque campagne d'adhésion | `make adherents F=adherents.csv` (colonne email détectée automatiquement) |
+| Après chaque campagne d'adhésion | admin → *Adhérents* → **Importer un CSV** (ajout, ou remplacement de toute la liste), ou en SSH `make adherents F=adherents.csv` (remplacement). Colonne email détectée automatiquement ; places réattribuées ensuite. |
 | Rentrée, classes connues | `make classes C="6A 6B 5A ... 2NDE1 1G1 TG1"` (le niveau est le code de niveau qui débute le nom, le plus long l'emportant : 2PRO1 → 2PRO) |
 | Rentrée | `make relance` |
 | Fin d'année | `make backup`, puis `make purge` |
