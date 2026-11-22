@@ -32,12 +32,12 @@ Automatiser la désignation des parents délégués (collège et lycée) pour su
 | Conseil de classe (V3) | Admin saisit les dates | Alerte J-14 aux parents délégués → chacun indique sa disponibilité via son lien → l'admin voit qui siège. |
 | Fin d'année | Commande planifiée | Purge des données de l'année scolaire écoulée. |
 
-Le bureau de l'APE n'intervient que pour : importer le CSV des adhérents, créer la liste des classes à la rentrée, saisir les dates des conseils de classe, retirer un parent délégué si nécessaire.
+Le bureau de l'APE n'intervient que pour : importer le CSV des adhérents (depuis l'admin), créer la liste des classes à la rentrée, saisir les dates des conseils de classe, retirer un parent délégué si nécessaire.
 
 ## 4. Modèle de données
 
 ```
-Adherent      email (unique) — remplacé à chaque import CSV
+Adherent      email (unique) — import CSV depuis l'admin (ajout ou remplacement) ou make adherents (remplacement)
 Parent        email (unique), nom, prénom, téléphone (optionnel),
               consentement_le, partage_coordonnees (bool)
 Niveau        code (clé, ex. "4", "2PRO"), libellé, ordre — géré dans l'admin

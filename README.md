@@ -76,12 +76,33 @@ Il change son mot de passe via le lien en haut de l'admin.
 | Quand | Commande |
 |---|---|
 | Juin (ouverture) | vérifier les niveaux proposés (admin → *Niveaux*), puis partager l'URL du site (page d'accueil) |
-| Après chaque campagne d'adhésion | admin → *Adhérents* → **Importer un CSV** (ajout, ou remplacement de toute la liste), ou en SSH `make adherents F=adherents.csv` (remplacement). Colonne email détectée automatiquement ; places réattribuées ensuite. |
+| Après chaque campagne d'adhésion | importer les adhérents (voir [Import des adhérents](#import-des-adhérents-csv)) |
 | Rentrée, classes connues | `make classes C="6A 6B 5A ... 2NDE1 1G1 TG1"` (le niveau est le code de niveau qui débute le nom, le plus long l'emportant : 2PRO1 → 2PRO) |
 | Rentrée | `make relance` |
 | Fin d'année | `make backup`, puis `make purge` |
 
 Les places sont attribuées automatiquement dès qu'un parent indique la classe. Une modification manuelle du statut dans l'admin n'envoie pas d'email.
+
+### Import des adhérents (CSV)
+
+Seuls les emails comptent : un parent est adhérent si son email figure dans la liste (comparaison sans tenir compte des majuscules).
+
+- **Depuis l'admin** (Bureau ou super-utilisateur) : *Adhérents* → **Importer un CSV**. Par défaut les emails sont **ajoutés** à la liste ; cocher « Remplacer toute la liste » pour repartir de zéro (ex. nouvel export complet HelloAsso).
+- **En SSH** : `make adherents F=adherents.csv` **remplace** toute la liste. Options : `--colonne "Email payeur"`, `--delimiteur ";"` (via `.venv/bin/python manage.py import_adherents`).
+
+Format accepté :
+- n'importe quel export (HelloAsso, tableur…) avec une ligne d'en-tête ; la colonne utilisée est la première dont le nom contient « mail » ;
+- séparateur virgule, point-virgule ou tabulation (détecté) ; un fichier d'une seule colonne `email` convient ;
+- encodage UTF-8 ou Excel Windows ; les lignes sans « @ » sont ignorées.
+
+Exemple minimal :
+```
+email
+parent1@exemple.fr
+parent2@exemple.fr
+```
+
+Après chaque import, les places sont recalculées : les adhérents passent devant dans les listes d'attente (un parent déjà retenu n'est jamais remplacé) et les parents concernés reçoivent l'email correspondant.
 
 ## Configuration (variables d'environnement)
 
