@@ -6,11 +6,8 @@ M  := $(PY) manage.py
 help: ## Affiche cette aide
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-12s %s\n", $$1, $$2}'
 
-$(PY):
-	uv venv
-
-install: $(PY) ## Crée le venv et installe les dépendances
-	uv pip install -q -r requirements.txt
+install: ## Crée le venv et installe les dépendances (pyproject.toml)
+	uv sync -q
 
 migrate: ## Applique les migrations
 	$(M) migrate

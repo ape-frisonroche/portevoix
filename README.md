@@ -2,18 +2,42 @@
 
 Gestion des représentants des parents d'élèves de l'APE. Conception : [docs/conception.md](docs/conception.md).
 
-## Démarrer en local
+## Développement
+
+Prérequis : [uv](https://docs.astral.sh/uv/) (`pip install --user uv`), qui installe aussi Python 3.11+ si besoin.
 
 ```bash
-make install   # environnement Python + dépendances
+make install   # crée .venv et installe les dépendances (pyproject.toml, uv.lock)
 make test
-make run
+make run       # http://localhost:8000/ (formulaire parents)
 ```
 
-`make help` liste toutes les commandes.
+`make help` liste toutes les commandes. Sans `.env`, l'app tourne en mode debug avec une base `db.sqlite3` locale, et les emails (lien de l'espace parent compris) s'affichent dans le terminal.
 
-- Formulaire parents : http://localhost:8000/
-- En local, les emails s'affichent dans le terminal (lien magique compris).
+Pour essayer le parcours complet en local :
+
+1. `make admin` : crée un super-utilisateur et son code de première connexion pour `/admin/`.
+2. Candidater sur le formulaire, puis ouvrir le lien affiché dans le terminal.
+3. `make classes C="4A 4B"` : crée des classes, pour que le parent puisse choisir la sienne.
+
+Organisation du code :
+
+| Emplacement | Contenu |
+|---|---|
+| `portevoix/settings.py` | configuration (lue depuis `.env`) |
+| `representants/models.py` | données : parents, classes, candidatures, adhérents |
+| `representants/services.py` | règles métier : attribution des places, emails, lien de l'espace parent |
+| `representants/views.py`, `urls.py`, `templates/` | pages publiques (formulaire, espace parent) |
+| `representants/admin.py` | interface d'administration |
+| `representants/management/commands/` | commandes `make` (import, relance, purge…) |
+| `representants/tests.py` | tests |
+
+Modifications courantes :
+
+- **Dépendances** : `uv add <paquet>` (met à jour `pyproject.toml` et `uv.lock`, à commiter tous les deux).
+- **Modèles** (`models.py`) : `make migrations` puis `make migrate`, et commiter le fichier de migration généré.
+- **Version** : champ `version` de `pyproject.toml`.
+- **CI** : GitHub Actions (`.github/workflows/ci.yml`) lance les tests et vérifie qu'aucune migration ne manque à chaque push sur `main` et à chaque pull request.
 
 ## Administrateurs
 

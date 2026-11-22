@@ -1,0 +1,11 @@
+[project]
+name = "portevoix"
+version = "0.1.0"
+description = "Désignation des parents représentants aux conseils de classe"
+license = "GPL-3.0-or-later"
+requires-python = ">=3.11"
+dependencies = [
+    "django==5.2.19",
+    "django-otp==1.7.5",
+    "qrcode==8.2",
+]
