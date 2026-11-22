@@ -12,6 +12,7 @@ class Niveau(models.Model):
 
     class Meta:
         ordering = ["ordre", "code"]
+        verbose_name_plural = "niveaux"
 
     def __str__(self):
         return self.libelle
