@@ -41,7 +41,7 @@ class Parent(models.Model):
     consentement_le = models.DateTimeField("consentement au traitement le")
     partage_coordonnees = models.BooleanField(
         "accepte le partage de ses coordonnées", default=False,
-        help_text="avec les autres parents délégués de la classe et l'établissement",
+        help_text="avec les autres parents de la classe et l'établissement",
     )
 
     def __str__(self):

@@ -102,7 +102,7 @@ Tarifs et limites des offres gratuites à vérifier avant engagement.
 - **Responsable de traitement** : l'APE (représentée par sa présidence). Traitement inscrit au **registre des traitements**.
 - **Base légale** : consentement, par cases à cocher non pré-cochées :
   1. candidature et traitement des données ;
-  2. (distinct) transmission des coordonnées aux autres parents délégués de la classe et au chef d'établissement.
+  2. (distinct) transmission des coordonnées aux autres parents de la classe (tout parent peut demander qui sont les parents délégués de la classe de son enfant) et au chef d'établissement.
 - **Minimisation** : parent (nom, prénom, email, téléphone optionnel) ; enfant (prénom, nom, niveau, classe).
 - **Information (art. 13)** sur le formulaire : finalité, destinataires (bureau APE, chef d'établissement), durée de conservation, droits (accès, rectification, effacement, retrait du consentement), contact.
 - **Conservation** : jusqu'à la fin de l'année scolaire, puis purge automatique. Candidats non retenus supprimables plus tôt.

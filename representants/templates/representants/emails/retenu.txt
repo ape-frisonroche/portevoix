@@ -9,4 +9,4 @@ Le kit du parent délégué : {{ kit_url }}
 {% endif %}
 Votre espace : {{ lien }}
 
-L'APE
+Le Collectif APE Frison-Roche

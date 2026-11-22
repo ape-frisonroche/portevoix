@@ -5,4 +5,4 @@ d'attente : vous serez prévenu par email si une place se libère.
 
 Votre espace : {{ lien }}
 
-L'APE
+Le Collectif APE Frison-Roche

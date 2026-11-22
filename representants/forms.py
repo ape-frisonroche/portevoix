@@ -16,11 +16,11 @@ class CandidatureForm(EnfantForm):
     email = forms.EmailField(label="Votre email")
     telephone = forms.CharField(label="Téléphone (facultatif)", max_length=20, required=False)
     consentement = forms.BooleanField(
-        label="J'accepte que l'APE traite ces données pour la désignation des parents délégués.",
+        label="J'accepte que le Collectif APE Frison-Roche traite ces données pour la désignation des parents délégués.",
     )
     partage_coordonnees = forms.BooleanField(
         required=False,
-        label="J'accepte que mes coordonnées soient transmises aux autres parents délégués "
+        label="J'accepte que mes coordonnées soient transmises aux autres parents "
               "de la classe et au chef d'établissement.",
     )
 
