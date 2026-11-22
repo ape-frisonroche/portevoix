@@ -21,6 +21,20 @@
     }
   </script>
   <style>
+    /* plus dense que Pico par défaut (pas d'agrandissement du texte sur grand écran) */
+    :root { --pico-font-size: 100%; --pico-typography-spacing-vertical: .8rem; --pico-form-element-spacing-vertical: .5rem; }
+    h1 { margin-bottom: .8rem; }
+    /* .grille : 2 colonnes sur écran large, 1 sur mobile ; .large et les cases à cocher prennent toute la largeur */
+    @media (min-width: 768px) {
+      .grille { display: grid; grid-template-columns: 1fr 1fr; column-gap: 2rem; }
+      button[type=submit] { width: auto; }
+      .grille > .large, .grille > div:has(> input[type=checkbox]) { grid-column: 1 / -1; }
+    }
+    .grille > div:has(> input[type=checkbox]) { display: flex; flex-direction: row-reverse; justify-content: flex-end; align-items: start; gap: .5rem; }
+    .grille > div:has(> input[type=checkbox]) { margin-bottom: .6rem; }
+    .grille > div:has(> input[type=checkbox]) > label { margin: 0; }
+    .grille input[type=checkbox] { flex-shrink: 0; }
+    .grille > section > :first-child { margin-top: 0; }
     .errorlist { color: var(--pico-del-color); list-style: none; padding: 0; margin: 0; }
     .rgpd { font-size: .85rem; color: var(--pico-muted-color); border-top: 1px solid var(--pico-muted-border-color); margin-top: 2rem; padding-top: 1rem; }
     .tableau { overflow-x: auto; }

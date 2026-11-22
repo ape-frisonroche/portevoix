@@ -1,9 +1,16 @@
 {% extends "representants/base.html" %}
 {% block contenu %}
 <h1>Devenir parent représentant</h1>
+<div class="grille">
+<section>
 <p>Les parents représentants siègent aux conseils de classe : ils y portent la voix des familles
 et font le lien entre les parents de la classe et l'équipe pédagogique.</p>
-
+<p>Chaque classe compte au plus {{ places }} représentants. Les places vont d'abord aux adhérents de l'APE,
+puis par date de candidature. Un représentant retenu n'est jamais remplacé.</p>
+<p><a role="button" href="{% url 'candidature' %}">Candidater</a></p>
+<p>Déjà candidat ? <a href="{% url 'lien_perdu' %}">Retrouver mon lien personnel</a></p>
+</section>
+<section>
 <h2>Comment ça marche ?</h2>
 <ol>
   <li><strong>Candidatez</strong> pour chacun de vos enfants. Avant la rentrée, seul son niveau est demandé.</li>
@@ -11,9 +18,6 @@ et font le lien entre les parents de la classe et l'équipe pédagogique.</p>
   <li><strong>À la rentrée</strong>, indiquez la classe de votre enfant depuis votre espace.</li>
   <li>Vous êtes prévenu par email : <strong>retenu</strong> ou en <strong>liste d'attente</strong>.</li>
 </ol>
-<p>Chaque classe compte au plus {{ places }} représentants. Les places vont d'abord aux adhérents de l'APE,
-puis par date de candidature. Un représentant retenu n'est jamais remplacé.</p>
-
-<p><a role="button" href="{% url 'candidature' %}">Candidater</a></p>
-<p>Déjà candidat ? <a href="{% url 'lien_perdu' %}">Retrouver mon lien personnel</a></p>
+</section>
+</div>
 {% endblock %}

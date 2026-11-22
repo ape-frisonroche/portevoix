@@ -7,7 +7,7 @@ Plusieurs enfants ? Ajoutez les autres depuis votre espace personnel (lien reçu
 <p>Déjà candidat ? <a href="{% url 'lien_perdu' %}">Retrouver mon lien personnel</a></p>
 <form method="post">
   {% csrf_token %}
-  {{ form.as_p }}
+  <div class="grille">{{ form.as_div }}</div>
   <button type="submit">Envoyer ma candidature</button>
 </form>
 <section class="rgpd">

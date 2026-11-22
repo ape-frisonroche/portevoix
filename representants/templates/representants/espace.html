@@ -41,7 +41,7 @@
 <h2>Candidater pour un autre enfant</h2>
 <form method="post" action="{% url 'ajouter_enfant' jeton %}">
   {% csrf_token %}
-  {{ form.as_p }}
+  <div class="grille">{{ form.as_div }}</div>
   <button type="submit">Ajouter</button>
 </form>
 
