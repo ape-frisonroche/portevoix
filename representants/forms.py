@@ -1,11 +1,11 @@
 from django import forms
 
-from .models import NIVEAUX
+from .models import Niveau
 
 
 class EnfantForm(forms.Form):
     prenom_enfant = forms.CharField(label="Prénom de l'enfant", max_length=100)
-    niveau = forms.ChoiceField(label="Niveau à la rentrée", choices=NIVEAUX)
+    niveau = forms.ModelChoiceField(label="Niveau à la rentrée", queryset=Niveau.objects.all(), empty_label=None)
 
 
 class CandidatureForm(EnfantForm):

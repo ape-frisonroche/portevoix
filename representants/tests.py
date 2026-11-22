@@ -1,19 +1,21 @@
 from datetime import timedelta
+from io import StringIO
 
 from django.core import mail
+from django.core.management import CommandError, call_command
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
 from . import services
-from .models import Adherent, Candidature, Classe, Parent
+from .models import Adherent, Candidature, Classe, Niveau, Parent
 
 
 def candidat(n, classe, adherent=False):
     p = Parent.objects.create(email=f"p{n}@x.fr", prenom=f"P{n}", nom="N", consentement_le=timezone.now())
     if adherent:
         Adherent.objects.create(email=p.email)
-    c = Candidature.objects.create(parent=p, prenom_enfant="E", niveau="4", classe=classe)
+    c = Candidature.objects.create(parent=p, prenom_enfant="E", niveau_id="4", classe=classe)
     # dates de candidature croissantes
     Candidature.objects.filter(pk=c.pk).update(cree_le=timezone.now() + timedelta(minutes=n))
     return c
@@ -25,7 +27,7 @@ def statuts(*cands):
 
 class AttributionTest(TestCase):
     def setUp(self):
-        self.classe = Classe.objects.create(nom="4D", niveau="4")
+        self.classe = Classe.objects.create(nom="4D", niveau_id="4")
 
     def test_quatre_places_adherents_prioritaires(self):
         c = [candidat(i, self.classe) for i in range(4)] + [candidat(4, self.classe, adherent=True)]
@@ -62,6 +64,16 @@ class AttributionTest(TestCase):
         self.assertIn("représentant de la 4D", mail.outbox[-1].subject)
 
 
+class NiveauTest(TestCase):
+    def test_niveau_deduit_du_plus_long_code(self):
+        Niveau.objects.create(code="2PRO", libelle="2de pro")
+        call_command("creer_classes", "2pro1", "2A", stdout=StringIO())
+        self.assertEqual(Classe.objects.get(nom="2PRO1").niveau_id, "2PRO")
+        self.assertEqual(Classe.objects.get(nom="2A").niveau_id, "2")
+        with self.assertRaises(CommandError):
+            call_command("creer_classes", "XYZ", stdout=StringIO())
+
+
 class ParcoursTest(TestCase):
     def test_candidature_puis_classe(self):
         r = self.client.post(reverse("candidature"), {
@@ -71,7 +83,7 @@ class ParcoursTest(TestCase):
         self.assertEqual(r.status_code, 200)
         parent = Parent.objects.get(email="ana@x.fr")
         lien = services.lien_espace(parent).split("/espace/")[1].rstrip("/")
-        classe = Classe.objects.create(nom="4D", niveau="4")
+        classe = Classe.objects.create(nom="4D", niveau_id="4")
         cand = parent.candidatures.get()
         with self.captureOnCommitCallbacks(execute=True):
             self.client.post(reverse("choisir_classe", args=[lien]), {"candidature": cand.pk, "classe": classe.pk})

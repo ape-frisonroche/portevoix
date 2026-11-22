@@ -9,7 +9,7 @@ Automatiser la désignation des représentants des parents d'élèves (collège 
 ## 2. Règles de gestion
 
 - Un parent peut se porter candidat pour un ou plusieurs de ses enfants.
-- Avant la rentrée, seul le **niveau** est connu (6e, 5e, 4e, 3e, 2de, 1re, Terminale) ; la **classe** (ex. 4D) est connue à la rentrée.
+- Avant la rentrée, seul le **niveau** est connu (6e, 5e, 4e, 3e, 2de, 1re, Terminale par défaut ; liste modifiable dans l'admin, ex. niveaux professionnels) ; la **classe** (ex. 4D) est connue à la rentrée.
 - Un parent peut candidater à tout moment, y compris après la rentrée (même formulaire).
 - Un représentant doit avoir au moins un enfant dans la classe.
 - **Maximum 4 représentants par classe.**
@@ -40,8 +40,9 @@ Le bureau de l'APE n'intervient que pour : importer le CSV des adhérents, crée
 Adherent      email (unique) — remplacé à chaque import CSV
 Parent        email (unique), nom, prénom, téléphone (optionnel),
               consentement_le, partage_coordonnees (bool)
-Classe        nom ("4D", unique), niveau (déduit du 1er caractère)
-Candidature   parent →, prénom_enfant, niveau, classe → (vide avant la rentrée),
+Niveau        code (clé, ex. "4", "2PRO"), libellé, ordre — géré dans l'admin
+Classe        nom ("4D", unique), niveau → (code le plus long qui débute le nom)
+Candidature   parent →, prénom_enfant, niveau →, classe → (vide avant la rentrée),
               statut [candidat | retenu | attente | retiré], date
               contrainte : (parent, classe) unique
 -- V3 --

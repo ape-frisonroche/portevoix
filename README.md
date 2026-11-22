@@ -49,7 +49,7 @@ L'admin (`/admin/`) exige un mot de passe **et** un code à 6 chiffres généré
 | Rôle | Droits | Qui |
 |---|---|---|
 | **Super-utilisateur** | tout, y compris les comptes administrateurs | 1 ou 2 personnes (technique, présidence), seules à avoir l'accès SSH aux commandes `make` |
-| **Groupe « Bureau »** (créé automatiquement) | parents, classes, candidatures, adhérents ; pas de gestion des comptes | les autres membres du bureau |
+| **Groupe « Bureau »** (créé automatiquement) | parents, classes, candidatures, adhérents, niveaux ; pas de gestion des comptes | les autres membres du bureau |
 
 ### Premier super-utilisateur (SSH)
 
@@ -83,9 +83,9 @@ L'admin (`/admin/`) exige un mot de passe **et** un code à 6 chiffres généré
 
 | Quand | Commande |
 |---|---|
-| Juin (ouverture) | partager l'URL du site (page d'accueil) |
+| Juin (ouverture) | vérifier les niveaux proposés (admin → *Niveaux*), puis partager l'URL du site (page d'accueil) |
 | Après chaque campagne d'adhésion | `make adherents F=adherents.csv` (colonne email détectée automatiquement) |
-| Rentrée, classes connues | `make classes C="6A 6B 5A ... 2NDE1 1G1 TG1"` (le 1er caractère donne le niveau) |
+| Rentrée, classes connues | `make classes C="6A 6B 5A ... 2NDE1 1G1 TG1"` (le niveau est le code de niveau qui débute le nom, le plus long l'emportant : 2PRO1 → 2PRO) |
 | Rentrée | `make relance` |
 | Fin d'année | `make backup`, puis `make purge` |
 

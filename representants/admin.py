@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Adherent, Candidature, Classe, Parent
+from .models import Adherent, Candidature, Classe, Niveau, Parent
 
 
 class CandidatureInline(admin.TabularInline):
@@ -45,3 +45,12 @@ class CandidatureAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Adherent, search_fields=["email"])
+
+
+@admin.register(Niveau)
+class NiveauAdmin(admin.ModelAdmin):
+    list_display = ["code", "libelle", "ordre"]
+    list_editable = ["libelle", "ordre"]
+
+    def get_readonly_fields(self, request, obj=None):
+        return ["code"] if obj else []  # le code sert de clé : le changer casserait les liens

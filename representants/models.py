@@ -1,9 +1,26 @@
 from django.db import models
 
-NIVEAUX = [
-    ("6", "6e"), ("5", "5e"), ("4", "4e"), ("3", "3e"),
-    ("2", "2de"), ("1", "1re"), ("T", "Terminale"),
-]
+class Niveau(models.Model):
+    """Niveaux proposés aux parents, gérés dans l'admin (ex. ajouter « 2PRO » / « 2de pro »)."""
+
+    code = models.CharField(
+        max_length=10, primary_key=True,
+        help_text="Début des noms de classe de ce niveau : 4 pour 4A, 2PRO pour 2PRO1. Non modifiable ensuite.",
+    )
+    libelle = models.CharField("libellé", max_length=50)
+    ordre = models.PositiveSmallIntegerField(default=0, help_text="Ordre d'affichage dans les listes.")
+
+    class Meta:
+        ordering = ["ordre", "code"]
+
+    def __str__(self):
+        return self.libelle
+
+    @classmethod
+    def depuis_nom_de_classe(cls, nom):
+        """Niveau dont le code est le plus long préfixe du nom : 2PRO1 → 2PRO plutôt que 2."""
+        codes = [c for c in cls.objects.values_list("code", flat=True) if nom.upper().startswith(c.upper())]
+        return cls.objects.get(code=max(codes, key=len)) if codes else None
 
 
 class Adherent(models.Model):
@@ -36,10 +53,10 @@ class Parent(models.Model):
 
 class Classe(models.Model):
     nom = models.CharField(max_length=20, unique=True)
-    niveau = models.CharField(max_length=1, choices=NIVEAUX)
+    niveau = models.ForeignKey(Niveau, on_delete=models.PROTECT, related_name="classes")
 
     class Meta:
-        ordering = ["niveau", "nom"]
+        ordering = ["niveau__ordre", "nom"]
 
     def __str__(self):
         return self.nom
@@ -56,7 +73,7 @@ class Candidature(models.Model):
 
     parent = models.ForeignKey(Parent, on_delete=models.CASCADE, related_name="candidatures")
     prenom_enfant = models.CharField("prénom de l'enfant", max_length=100)
-    niveau = models.CharField(max_length=1, choices=NIVEAUX)
+    niveau = models.ForeignKey(Niveau, on_delete=models.PROTECT, related_name="candidatures")
     classe = models.ForeignKey(
         Classe, on_delete=models.PROTECT, null=True, blank=True, related_name="candidatures"
     )
@@ -71,4 +88,4 @@ class Candidature(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.parent} pour {self.prenom_enfant} ({self.classe or self.get_niveau_display()})"
+        return f"{self.parent} pour {self.prenom_enfant} ({self.classe or self.niveau})"

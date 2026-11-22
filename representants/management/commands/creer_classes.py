@@ -1,12 +1,11 @@
 from django.core.management.base import BaseCommand, CommandError
 
-from representants.models import NIVEAUX, Classe
-
-CODES = {code for code, _ in NIVEAUX}
+from representants.models import Classe, Niveau
 
 
 class Command(BaseCommand):
-    help = "Crée les classes de l'année. Le niveau est déduit du 1er caractère : 6A, 2NDE3, 1G2, TG1..."
+    help = ("Crée les classes de l'année. Le niveau est le code (admin → Niveaux) qui débute le nom, "
+            "le plus long l'emportant : 6A → 6, 2PRO1 → 2PRO, TG1 → T.")
 
     def add_arguments(self, parser):
         parser.add_argument("noms", nargs="+")
@@ -14,7 +13,9 @@ class Command(BaseCommand):
     def handle(self, noms, **_):
         for nom in noms:
             nom = nom.strip().upper()
-            if nom[0] not in CODES:
-                raise CommandError(f"{nom} : niveau inconnu (1er caractère parmi {', '.join(sorted(CODES))})")
-            _, cree = Classe.objects.get_or_create(nom=nom, defaults={"niveau": nom[0]})
-            self.stdout.write(f"{nom} {'créée' if cree else 'existe déjà'}")
+            niveau = Niveau.depuis_nom_de_classe(nom)
+            if niveau is None:
+                codes = ", ".join(Niveau.objects.values_list("code", flat=True))
+                raise CommandError(f"{nom} : niveau inconnu (le nom doit commencer par un code parmi {codes})")
+            _, cree = Classe.objects.get_or_create(nom=nom, defaults={"niveau": niveau})
+            self.stdout.write(f"{nom} {'créée' if cree else 'existe déjà'} ({niveau})")

@@ -7,7 +7,7 @@
   <tbody>
   {% for c in candidatures %}
     <tr>
-      <td>{{ c.prenom_enfant }} ({{ c.get_niveau_display }})</td>
+      <td>{{ c.prenom_enfant }} ({{ c.niveau }})</td>
       <td>
         {% if c.classe %}{{ c.classe }}
         {% elif c.classes_possibles %}

@@ -63,10 +63,10 @@ def espace(request, jeton):
     parent = _parent(jeton)
     if parent is None:
         return render(request, "representants/lien_invalide.html", status=400)
-    candidatures = list(parent.candidatures.select_related("classe"))
+    candidatures = list(parent.candidatures.select_related("classe", "niveau"))
     classes = Classe.objects.all()
     for c in candidatures:
-        c.classes_possibles = [k for k in classes if k.niveau == c.niveau]
+        c.classes_possibles = [k for k in classes if k.niveau_id == c.niveau_id]
     return render(request, "representants/espace.html",
                   {"parent": parent, "candidatures": candidatures, "jeton": jeton, "form": EnfantForm()})
 
