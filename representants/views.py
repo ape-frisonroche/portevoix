@@ -11,6 +11,10 @@ from .forms import CandidatureForm, EnfantForm
 from .models import Candidature, Classe, Parent
 
 
+def accueil(request):
+    return render(request, "representants/accueil.html", {"places": settings.MAX_REPRESENTANTS})
+
+
 def candidature(request):
     form = CandidatureForm(request.POST or None)
     if form.is_valid():

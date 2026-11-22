@@ -14,11 +14,12 @@
     .errorlist { color: #b00020; padding-left: 1rem; }
     .info { background: #eef4ff; padding: .8rem 1rem; border-radius: 6px; }
     .rgpd { font-size: .85rem; color: #555; border-top: 1px solid #ddd; margin-top: 2rem; padding-top: 1rem; }
+    .bouton { display: inline-block; padding: .6rem 1.2rem; background: #1d4ed8; color: #fff; border-radius: 6px; text-decoration: none; font-weight: 600; }
     table { width: 100%; border-collapse: collapse; } td, th { text-align: left; padding: .4rem; border-bottom: 1px solid #ddd; }
   </style>
 </head>
 <body>
-  <header><strong>Porte-Voix</strong> · APE</header>
+  <header><a href="{% url 'accueil' %}"><strong>Porte-Voix</strong></a> · APE</header>
   {% for m in messages %}<p class="info" role="status">{{ m }}</p>{% endfor %}
   {% block contenu %}{% endblock %}
 </body>

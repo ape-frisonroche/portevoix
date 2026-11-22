@@ -97,6 +97,11 @@ class ParcoursTest(TestCase):
         self.assertEqual(len(mail.outbox), 1)  # rien envoyé, même page affichée
         self.assertEqual(connu.content.replace(b"A@X.fr", b""), inconnu.content.replace(b"z@x.fr", b""))
 
+    def test_accueil_mene_au_formulaire(self):
+        r = self.client.get(reverse("accueil"))
+        self.assertContains(r, reverse("candidature"))
+        self.assertContains(r, reverse("lien_perdu"))
+
     def test_groupe_bureau(self):
         from django.contrib.auth.models import Group
         perms = set(Group.objects.get(name="Bureau").permissions.values_list("codename", flat=True))

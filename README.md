@@ -9,7 +9,7 @@ Prérequis : [uv](https://docs.astral.sh/uv/) (`pip install --user uv`), qui ins
 ```bash
 make install   # crée .venv et installe les dépendances (pyproject.toml, uv.lock)
 make test
-make run       # http://localhost:8000/ (formulaire parents)
+make run       # http://localhost:8000/ (accueil ; formulaire sur /candidater/)
 ```
 
 `make help` liste toutes les commandes. Sans `.env`, l'app tourne en mode debug avec une base `db.sqlite3` locale, et les emails (lien de l'espace parent compris) s'affichent dans le terminal.
@@ -27,7 +27,7 @@ Organisation du code :
 | `portevoix/settings.py` | configuration (lue depuis `.env`) |
 | `representants/models.py` | données : parents, classes, candidatures, adhérents |
 | `representants/services.py` | règles métier : attribution des places, emails, lien de l'espace parent |
-| `representants/views.py`, `urls.py`, `templates/` | pages publiques (formulaire, espace parent, lien perdu) |
+| `representants/views.py`, `urls.py`, `templates/` | pages publiques (accueil, formulaire, espace parent, lien perdu) |
 | `representants/admin.py` | interface d'administration |
 | `representants/management/commands/` | commandes `make` (import, relance, purge…) |
 | `representants/tests.py` | tests |
@@ -80,7 +80,7 @@ L'admin (`/admin/`) exige un mot de passe **et** un code à 6 chiffres généré
 
 | Quand | Commande |
 |---|---|
-| Juin (ouverture) | partager l'URL du formulaire |
+| Juin (ouverture) | partager l'URL du site (page d'accueil) |
 | Après chaque campagne d'adhésion | `make adherents F=adherents.csv` (colonne email détectée automatiquement) |
 | Rentrée, classes connues | `make classes C="6A 6B 5A ... 2NDE1 1G1 TG1"` (le 1er caractère donne le niveau) |
 | Rentrée | `make relance` |
