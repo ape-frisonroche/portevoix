@@ -5,7 +5,7 @@ DB  = $(shell $(M) shell -v 0 -c "from django.conf import settings; print(settin
 # copie à chaud via l'API backup de SQLite (cohérente même si l'app tourne)
 COPIE := $(PY) -c "import sqlite3, sys; sqlite3.connect(sys.argv[1]).backup(sqlite3.connect(sys.argv[2]))"
 
-.PHONY: help install migrate migrations run test deploy admin classes adherents relance purge backup restore shell clean
+.PHONY: help install migrate migrations run test deploy admin classes adherents relance purge backup restore update shell clean
 
 help: ## Affiche cette aide
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-12s %s\n", $$1, $$2}'
@@ -27,6 +27,13 @@ test: ## Lance les tests
 
 deploy: install migrate ## Installe, migre et collecte les fichiers statiques (serveur)
 	$(M) collectstatic --noinput
+
+update: ## Mise à jour sur le serveur : sauvegarde, git pull, deploy (redémarrer ensuite le site)
+	$(MAKE) -s backup
+	git pull --ff-only
+	$(MAKE) deploy
+	uv cache clean -q
+	@echo "Pensez à redémarrer le site (Alwaysdata : Web > Sites > Redémarrer)."
 
 admin: ## Crée un superutilisateur (son email reçoit le code de connexion) : make admin U=identifiant
 	@test -n "$(U)" || { echo "Usage : make admin U=identifiant"; exit 1; }

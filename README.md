@@ -178,14 +178,39 @@ Quota de l'offre gratuite : 300 emails par jour (à vérifier). Mettre à jour l
 
 ## Déploiement sur Alwaysdata
 
-1. Créer un compte gratuit, puis copier le code par SSH (ou `git clone`) dans `~/portevoix`.
-2. Par SSH, dans `~/portevoix` : créer `.env` (voir [Configuration](#configuration-variables-denvironnement)), puis `make deploy` (à relancer après chaque mise à jour du code ; nécessite `uv`, installable avec `pip install --user uv`).
-3. *Web → Sites → Ajouter* : type **Python WSGI**, application `~/portevoix/portevoix/wsgi.py`, virtualenv `~/portevoix/.venv`, répertoire de travail `~/portevoix`, chemin statique `/static/=staticfiles/`. Pas de variables d'environnement à saisir : elles viennent de `.env`.
-4. *Tâches planifiées* : sauvegarde quotidienne
+Pas de paquet à construire : le serveur récupère le code depuis GitHub, et `make deploy` installe les dépendances, applique les migrations et collecte les fichiers statiques. Dans ce qui suit, `<compte>` est le nom du compte Alwaysdata.
+
+### Installation (une seule fois)
+
+1. **Compte** : créer un compte (l'offre gratuite suffit), puis dans *Environnement → Python* choisir **Python 3.11 ou plus récent**.
+2. **Code**, par SSH (`ssh <compte>@ssh-<compte>.alwaysdata.net`) :
+   ```bash
+   pip install --user uv
+   git clone https://github.com/ape-frisonroche/portevoix.git ~/portevoix
+   ```
+   Dépôt GitHub **privé** : générer une clé sur Alwaysdata (`ssh-keygen -t ed25519`), l'ajouter dans GitHub (*Settings → Deploy keys*, lecture seule), puis cloner avec `git@github.com:ape-frisonroche/portevoix.git`.
+3. **Configuration** : `cd ~/portevoix && cp .env.example .env && chmod 600 .env`, puis remplir `.env` (voir [Configuration](#configuration-variables-denvironnement)) : `SECRET_KEY`, `ALLOWED_HOSTS=<compte>.alwaysdata.net`, `SITE_URL=https://<compte>.alwaysdata.net`, `DB_PATH=/home/<compte>/portevoix/db.sqlite3`, variables `EMAIL_*`.
+4. **Installation** : `make deploy && uv cache clean`.
+5. **Test d'envoi d'email** : `.venv/bin/python manage.py sendtestemail votre@adresse.fr`. Sans emails, ni les parents (liens) ni les administrateurs (code de connexion) ne peuvent rien faire.
+6. **Premier administrateur** : `make admin U=<identifiant>`, avec une adresse email personnelle (le code de connexion y est envoyé).
+7. **Site** : *Web → Sites → Ajouter* : type **Python WSGI**, application `/home/<compte>/portevoix/portevoix/wsgi.py`, virtualenv `/home/<compte>/portevoix/.venv`, répertoire de travail `/home/<compte>/portevoix`, chemin statique `/static/=staticfiles/`. Pas de variables d'environnement à saisir : elles viennent de `.env`.
+8. **Tâche planifiée** (*Tâches planifiées → Ajouter*), sauvegarde quotidienne :
    `cd ~/portevoix && make -s backup F=backups/db-$(date +%u).sqlite3`
    (7 copies tournantes, une par jour de la semaine).
 
-Les libellés de l'interface Alwaysdata peuvent varier : vérifiez-les dans leur documentation.
+### Mise à jour
+
+```bash
+cd ~/portevoix && make update
+```
+
+`make update` sauvegarde la base, récupère le code (`git pull`), lance `make deploy` (dépendances, migrations, fichiers statiques) puis vide le cache de `uv`. **Redémarrer ensuite le site** (*Web → Sites → Redémarrer*) pour charger le nouveau code. En cas de problème : `make restore F=backups/db-….sqlite3` avec la sauvegarde faite au début de la mise à jour.
+
+### Offre gratuite
+
+- **Espace disque limité** (de l'ordre de 100 Mo) : l'environnement Python (`.venv`) en prend quelques dizaines ; `make update` vide le cache de `uv`, et les sauvegardes sont limitées à 7 copies. Vérifier l'espace utilisé dans l'interface Alwaysdata.
+- Préférer le Python fourni par Alwaysdata (étape 1) : si `uv` doit en télécharger un, il occupe aussi de l'espace.
+- Vérifier les limites exactes de l'offre dans la documentation Alwaysdata ; les libellés de l'interface peuvent aussi varier.
 
 ## Licence
 
