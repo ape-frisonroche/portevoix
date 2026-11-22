@@ -23,7 +23,8 @@ Automatiser la désignation des représentants des parents d'élèves (collège 
 
 | Étape | Acteur | Déroulement |
 |---|---|---|
-| Candidature | Parent | Formulaire public → email de confirmation avec **lien magique** (vérifie l'adresse, pas de mot de passe). |
+| Candidature | Parent | Formulaire public → email de confirmation avec **lien magique** (vérifie l'adresse, pas de mot de passe). Un seul lien par parent, identique dans tous les emails, menant à son espace : tous ses enfants, ajout d'un autre enfant, retrait, suppression de ses données. |
+| Lien perdu | Parent | Page « Lien perdu ? » (`/lien-perdu/`) : le parent saisit son email et reçoit à nouveau son lien. Même réponse que l'email soit connu ou non (ne révèle pas qui est inscrit). |
 | Rentrée | Automatique | Email avec le lien : « indiquez la classe de votre enfant ». La classe est fournie par le parent, pas par l'établissement (évite un transfert de données). |
 | Attribution | Automatique | Dès qu'un enfant a une classe : moins de 4 retenus → *retenu*, sinon → *attente* (adhérents d'abord, puis par date). |
 | Notification | Automatique | Email « vous êtes représentant de la 4D » + coordonnées des autres représentants de la classe (si consentement) + lien vers le kit. Email aux candidats en attente. |

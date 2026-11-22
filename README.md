@@ -27,7 +27,7 @@ Organisation du code :
 | `portevoix/settings.py` | configuration (lue depuis `.env`) |
 | `representants/models.py` | données : parents, classes, candidatures, adhérents |
 | `representants/services.py` | règles métier : attribution des places, emails, lien de l'espace parent |
-| `representants/views.py`, `urls.py`, `templates/` | pages publiques (formulaire, espace parent) |
+| `representants/views.py`, `urls.py`, `templates/` | pages publiques (formulaire, espace parent, lien perdu) |
 | `representants/admin.py` | interface d'administration |
 | `representants/management/commands/` | commandes `make` (import, relance, purge…) |
 | `representants/tests.py` | tests |
@@ -72,6 +72,7 @@ L'admin (`/admin/`) exige un mot de passe **et** un code à 6 chiffres généré
 
 - **Départ du bureau** (à faire à chaque changement de bureau) : *Utilisateurs* → décocher **Actif**. Effet immédiat.
 - **Téléphone perdu** : supprimer son appareil dans *TOTP devices*, lui donner un nouveau code de première connexion, puis recommencer l'enregistrement.
+- **Parent ayant perdu son lien** : l'orienter vers la page « Lien perdu ? » (`/lien-perdu/`, accessible depuis le formulaire), qui lui renvoie son lien par email.
 - **Modifications manuelles** : changer un statut ou supprimer une candidature dans l'admin n'envoie pas d'email et ne promeut pas la liste d'attente. Pour un retrait, préférer que le parent utilise son espace personnel : bouton « Retirer » pour un enfant, ou suppression de toutes ses données ; la place libérée va alors au 1er de la liste d'attente, prévenu par email.
 
 ## Calendrier annuel
