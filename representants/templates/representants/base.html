@@ -35,7 +35,10 @@
     .grille > div:has(> input[type=checkbox]) { margin-bottom: .6rem; }
     .grille > div:has(> input[type=checkbox]) > label { margin: 0; }
     .grille input[type=checkbox] { flex-shrink: 0; }
-    .grille > section > :first-child { margin-top: 0; }
+    .grille > section > :first-child, article > :first-child { margin-top: 0; }
+    /* cartes teintées du vert de l'APE, en clair comme en sombre */
+    article { background: color-mix(in srgb, #56b847 8%, var(--pico-card-background-color)); border: 1px solid color-mix(in srgb, #56b847 40%, transparent); }
+    article > :last-child { margin-bottom: 0; }
     .errorlist { color: var(--pico-del-color); list-style: none; padding: 0; margin: 0; }
     .rgpd { font-size: .85rem; color: var(--pico-muted-color); border-top: 1px solid var(--pico-muted-border-color); margin-top: 2rem; padding-top: 1rem; }
     .tableau { overflow-x: auto; }
