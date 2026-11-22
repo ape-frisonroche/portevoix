@@ -1,6 +1,7 @@
 {% extends "representants/base.html" %}
 {% block contenu %}
 <h1>Bonjour {{ parent.prenom }}</h1>
+<div class="tableau">
 <table>
   <thead><tr><th>Enfant</th><th>Classe</th><th>Statut</th><th></th></tr></thead>
   <tbody>
@@ -36,6 +37,7 @@
   {% endfor %}
   </tbody>
 </table>
+</div>
 <h2>Candidater pour un autre enfant</h2>
 <form method="post" action="{% url 'ajouter_enfant' jeton %}">
   {% csrf_token %}

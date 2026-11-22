@@ -1,26 +1,41 @@
-<!doctype html>
+{% load static %}<!doctype html>
 <html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
   <title>{% block titre %}Porte-Voix{% endblock %}</title>
+  {# Pico CSS servi localement (pas de CDN : aucune donnée des parents envoyée à un tiers). Thème clair/sombre selon le réglage de l'appareil. #}
+  <link rel="stylesheet" href="{% static 'representants/pico.classless.min.css' %}">
+  <script>
+    // Thème choisi par le bouton, mémorisé dans le navigateur ; sinon réglage de l'appareil.
+    function themeActuel() {
+      return document.documentElement.dataset.theme
+        || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    }
+    try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+    function basculerTheme() {
+      var t = themeActuel() === "dark" ? "light" : "dark";
+      document.documentElement.dataset.theme = t;
+      try { localStorage.setItem("theme", t); } catch (e) {}
+    }
+  </script>
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; color: #1d1d1f; }
-    h1 { font-size: 1.6rem; }
-    label { display: block; font-weight: 600; margin-top: .8rem; }
-    input[type=text], input[type=email], select { width: 100%; padding: .5rem; font-size: 1rem; box-sizing: border-box; }
-    input[type=checkbox] + label, label:has(input[type=checkbox]) { font-weight: normal; }
-    button { margin-top: 1rem; padding: .6rem 1.2rem; font-size: 1rem; cursor: pointer; }
-    .errorlist { color: #b00020; padding-left: 1rem; }
-    .info { background: #eef4ff; padding: .8rem 1rem; border-radius: 6px; }
-    .rgpd { font-size: .85rem; color: #555; border-top: 1px solid #ddd; margin-top: 2rem; padding-top: 1rem; }
-    .bouton { display: inline-block; padding: .6rem 1.2rem; background: #1d4ed8; color: #fff; border-radius: 6px; text-decoration: none; font-weight: 600; }
-    table { width: 100%; border-collapse: collapse; } td, th { text-align: left; padding: .4rem; border-bottom: 1px solid #ddd; }
+    .errorlist { color: var(--pico-del-color); list-style: none; padding: 0; margin: 0; }
+    .rgpd { font-size: .85rem; color: var(--pico-muted-color); border-top: 1px solid var(--pico-muted-border-color); margin-top: 2rem; padding-top: 1rem; }
+    .tableau { overflow-x: auto; }
+    #theme { margin: 0; padding: .3rem .6rem; width: auto; background: none; color: inherit; border-color: var(--pico-muted-border-color); }
   </style>
 </head>
 <body>
-  <header><a href="{% url 'accueil' %}"><strong>Porte-Voix</strong></a> · APE</header>
-  {% for m in messages %}<p class="info" role="status">{{ m }}</p>{% endfor %}
-  {% block contenu %}{% endblock %}
+  <header><nav>
+    <ul><li><a href="{% url 'accueil' %}"><strong>Porte-Voix</strong></a> · APE</li></ul>
+    <ul><li><button id="theme" type="button" onclick="basculerTheme()"
+                    aria-label="Basculer entre thème clair et sombre" title="Thème clair / sombre">◐</button></li></ul>
+  </nav></header>
+  <main>
+    {% for m in messages %}<article role="status">{{ m }}</article>{% endfor %}
+    {% block contenu %}{% endblock %}
+  </main>
 </body>
 </html>
