@@ -123,3 +123,21 @@ class ParcoursTest(TestCase):
     def test_lien_falsifie(self):
         r = self.client.get(reverse("espace", args=["faux"]))
         self.assertEqual(r.status_code, 400)
+
+
+class AdminCodeEmailTest(TestCase):
+    def test_mot_de_passe_puis_code_par_email(self):
+        import re
+        from django.contrib.auth.models import User
+        User.objects.create_superuser("chef", "chef@ape.fr", "mdp-tres-long-123")
+        r = self.client.post(reverse("admin:login") + "?next=/admin/",
+                             {"username": "chef", "password": "mdp-tres-long-123"}, follow=True)
+        self.assertContains(r, "envoyé à chef@ape.fr")
+        self.assertEqual(self.client.get("/admin/").status_code, 302)  # pas encore vérifié
+        code = re.search(r"\d{6}", mail.outbox[-1].subject).group()
+        mauvais = self.client.post(reverse("admin:code"), {"code": "000000" if code != "000000" else "111111"})
+        self.assertContains(mauvais, "Code invalide")
+        from django_otp.plugins.otp_email.models import EmailDevice
+        EmailDevice.objects.update(throttling_failure_count=0)  # lève le délai anti-force brute
+        self.client.post(reverse("admin:code") + "?next=/admin/", {"code": code})
+        self.assertEqual(self.client.get("/admin/").status_code, 200)

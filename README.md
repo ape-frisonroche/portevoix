@@ -16,7 +16,7 @@ make run       # http://localhost:8000/ (accueil ; formulaire sur /candidater/)
 
 Pour essayer le parcours complet en local :
 
-1. `make admin` : crée un super-utilisateur et son code de première connexion pour `/admin/`.
+1. `make admin U=admin` : crée un super-utilisateur pour `/admin/` (le code de connexion s'affiche dans le terminal).
 2. Candidater sur le formulaire, puis ouvrir le lien affiché dans le terminal.
 3. `make classes C="4A 4B"` : crée des classes, pour que le parent puisse choisir la sienne.
 
@@ -44,7 +44,7 @@ Modifications courantes :
 
 ## Administrateurs
 
-L'admin (`/admin/`) exige un mot de passe **et** un code à 6 chiffres généré par une application d'authentification (ex. Aegis, FreeOTP, Google Authenticator).
+L'admin (`/admin/`) se fait en deux étapes : identifiant et mot de passe, puis un **code à 6 chiffres envoyé par email** à l'adresse du compte (valable 5 minutes, au plus un envoi par minute). Rien à installer.
 
 | Rôle | Droits | Qui |
 |---|---|---|
@@ -53,28 +53,20 @@ L'admin (`/admin/`) exige un mot de passe **et** un code à 6 chiffres généré
 
 ### Premier super-utilisateur (SSH)
 
-`make admin` : crée le super-utilisateur et affiche un code à usage unique pour la première connexion.
-
-1. Se connecter sur `/admin/` avec ce code dans le champ « OTP Token ».
-2. *TOTP devices* → *Ajouter* → choisir son utilisateur → enregistrer.
-3. Dans la liste, cliquer sur le lien *qrcode* et le scanner avec l'application d'authentification.
-4. *Static devices* : supprimer le code de première connexion.
+`make admin U=identifiant` : crée le super-utilisateur (renseigner son email : c'est là qu'arrive le code), puis se connecter sur `/admin/`.
 
 ### Ajouter un administrateur (par un super-utilisateur, dans `/admin/`)
 
-1. *Utilisateurs → Ajouter* : identifiant et mot de passe provisoire, puis cocher **Statut équipe** et :
-   - soit ajouter au groupe **Bureau** ;
-   - soit cocher **Statut super-utilisateur**.
-2. *Static devices → Ajouter* : choisir l'utilisateur, ajouter un code de première connexion. Transmettre mot de passe et code par deux canaux différents (ex. email et SMS).
-3. Enregistrement de l'application d'authentification :
-   - **super-utilisateur** : il le fait lui-même après sa première connexion (étapes 2 à 4 ci-dessus) ;
-   - **Bureau** : il n'a pas accès aux *TOTP devices*. Un super-utilisateur crée l'appareil pour lui ; le nouvel administrateur scanne le *qrcode* sur l'écran du super-utilisateur (en personne ou en partage d'écran).
-4. Supprimer son code de première connexion (*Static devices*). Il change son mot de passe via le lien en haut de l'admin.
+*Utilisateurs → Ajouter* : identifiant et mot de passe provisoire, puis renseigner son **adresse email**, cocher **Statut équipe** et :
+- soit l'ajouter au groupe **Bureau** ;
+- soit cocher **Statut super-utilisateur**.
+
+Il change son mot de passe via le lien en haut de l'admin.
 
 ### Départ et incidents
 
 - **Départ du bureau** (à faire à chaque changement de bureau) : *Utilisateurs* → décocher **Actif**. Effet immédiat.
-- **Téléphone perdu** : supprimer son appareil dans *TOTP devices*, lui donner un nouveau code de première connexion, puis recommencer l'enregistrement.
+- **Code non reçu** : vérifier les indésirables, puis l'adresse email du compte dans *Utilisateurs*.
 - **Parent ayant perdu son lien** : l'orienter vers la page « Lien perdu ? » (`/lien-perdu/`, accessible depuis le formulaire), qui lui renvoie son lien par email.
 - **Sauvegarde / restauration** (SSH, dans `~/portevoix`) : `make backup` copie la base dans `backups/` ; `make restore F=backups/db-3.sqlite3` la remplace par une sauvegarde, après confirmation et après avoir sauvegardé la base actuelle (`backups/avant-restore-…`). Lancer ensuite `make migrate` si la sauvegarde date d'une version antérieure du code.
 - **Modifications manuelles** : changer un statut ou supprimer une candidature dans l'admin n'envoie pas d'email et ne promeut pas la liste d'attente. Pour un retrait, préférer que le parent utilise son espace personnel : bouton « Retirer » pour un enfant, ou suppression de toutes ses données ; la place libérée va alors au 1er de la liste d'attente, prévenu par email.

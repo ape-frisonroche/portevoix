@@ -37,8 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_otp",
-    "django_otp.plugins.otp_totp",
-    "django_otp.plugins.otp_static",
+    "django_otp.plugins.otp_email",
     "representants",
 ]
 
@@ -96,6 +95,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Emails : console en dev, SMTP (Gmail) en production
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "Porte-Voix <noreply@ape.example>")
+# Code de connexion à l'admin (django-otp, appareil email créé automatiquement)
+OTP_EMAIL_SUBJECT = "[Porte-Voix] Code de connexion : {token}"
+OTP_EMAIL_BODY_TEMPLATE = "Votre code de connexion à l'administration Porte-Voix : {{ token }}\n\nValable 5 minutes. Si vous n'êtes pas à l'origine de cette demande, changez votre mot de passe."
 if os.environ.get("EMAIL_HOST"):
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
     EMAIL_HOST = os.environ["EMAIL_HOST"]

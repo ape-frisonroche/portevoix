@@ -64,7 +64,7 @@ Disponibilité conseil →, parent →, disponible (bool)
 | Framework | **Django** | Admin (back-office), authentification, emails, migrations, formulaires inclus. |
 | Base de données | **SQLite** | Volume faible (quelques centaines de parents) ; sauvegarde = copie d'un fichier ; hébergement simplifié. |
 | Authentification parents | **Lien magique** via `django.core.signing` (natif) | Pas de mot de passe, email vérifié, aucune dépendance. |
-| Authentification admin | Admin Django + **2FA** (`django-otp`) | Seule dépendance ajoutée, justifiée par les données de mineurs. |
+| Authentification admin | Admin Django + **2FA par code email** (`django-otp`, `otp_email`) | Mot de passe puis code à 6 chiffres envoyé à l'adresse du compte : rien à installer pour les membres du bureau. Moins robuste qu'une application d'authentification (la sécurité dépend de la boîte email), choisi pour la simplicité. |
 | Emails | **SMTP Gmail** du compte de l'APE (mot de passe d'application) | L'adresse d'expédition est en `@gmail.com` : seul Gmail peut l'envoyer sans tomber en spam (DMARC). Gratuit, ~500 emails/jour. |
 | Style des pages | **Pico CSS** (version *classless*), copié dans le projet | Rendu soigné sans classes à écrire ; thème clair/sombre (réglage de l'appareil, ou bouton mémorisé dans le navigateur). Servi localement : aucune requête vers un CDN, donc pas d'adresse IP des parents transmise à un tiers. |
 | Tâches planifiées | Commandes `manage.py` lancées par cron | Relance rentrée, alertes conseils, sauvegarde, purge. |
@@ -107,7 +107,7 @@ Tarifs et limites des offres gratuites à vérifier avant engagement.
 - **Information (art. 13)** sur le formulaire : finalité, destinataires (bureau APE, chef d'établissement), durée de conservation, droits (accès, rectification, effacement, retrait du consentement), contact.
 - **Conservation** : jusqu'à la fin de l'année scolaire, puis purge automatique. Candidats non retenus supprimables plus tôt.
 - **Sous-traitants** : Alwaysdata (hébergement, France) et Google (boîte Gmail de l'APE, déjà utilisée) ; DPA (art. 28) acceptés auprès de chacun.
-- **Accès** : admin réservé à 2–3 membres du bureau, avec 2FA. Pas d'export de fichiers envoyés par email.
+- **Accès** : admin réservé à 2–3 membres du bureau, avec 2FA (code par email). Pas d'export de fichiers envoyés par email.
 - **Emails groupés** : destinataires en Cci, sauf entre parents délégués d'une même classe ayant consenti.
 - **Droits des personnes** : le parent peut consulter, modifier ou retirer sa candidature via son lien magique.
 

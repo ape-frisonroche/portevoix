@@ -28,9 +28,9 @@ test: ## Lance les tests
 deploy: install migrate ## Installe, migre et collecte les fichiers statiques (serveur)
 	$(M) collectstatic --noinput
 
-admin: ## Crée un superutilisateur + code de 1re connexion (2FA)
-	$(M) createsuperuser
-	@read -p "Identifiant du superutilisateur : " u && $(M) addstatictoken $$u
+admin: ## Crée un superutilisateur (son email reçoit le code de connexion) : make admin U=identifiant
+	@test -n "$(U)" || { echo "Usage : make admin U=identifiant"; exit 1; }
+	$(M) createsuperuser --username "$(U)"
 
 classes: ## Crée des classes : make classes C="6A 6B 4D TG1"
 	$(M) creer_classes $(C)
