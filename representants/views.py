@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from . import services
-from .forms import CandidatureForm
+from .forms import CandidatureForm, EnfantForm
 from .models import Candidature, Classe, Parent
 
 
@@ -24,12 +24,16 @@ def candidature(request):
         )
         # Un parent existant n'est pas modifié par ce formulaire public (n'importe qui
         # peut y saisir n'importe quel email) ; il gère ses données via son lien.
-        if not parent.candidatures.filter(prenom_enfant__iexact=d["prenom_enfant"]).exists():
-            Candidature.objects.create(parent=parent, prenom_enfant=d["prenom_enfant"], niveau=d["niveau"])
+        _ajouter_enfant(parent, d)
         services.envoyer(parent, "Confirmez votre candidature", "confirmation")
         return render(request, "representants/merci.html", {"email": parent.email})
     return render(request, "representants/candidature.html",
                   {"form": form, "contact": settings.CONTACT_RGPD})
+
+
+def _ajouter_enfant(parent, d):
+    if not parent.candidatures.filter(prenom_enfant__iexact=d["prenom_enfant"]).exists():
+        Candidature.objects.create(parent=parent, prenom_enfant=d["prenom_enfant"], niveau=d["niveau"])
 
 
 def _parent(jeton):
@@ -48,7 +52,19 @@ def espace(request, jeton):
     for c in candidatures:
         c.classes_possibles = [k for k in classes if k.niveau == c.niveau]
     return render(request, "representants/espace.html",
-                  {"parent": parent, "candidatures": candidatures, "jeton": jeton})
+                  {"parent": parent, "candidatures": candidatures, "jeton": jeton, "form": EnfantForm()})
+
+
+@require_POST
+def ajouter_enfant(request, jeton):
+    parent = _parent(jeton)
+    if parent is None:
+        return render(request, "representants/lien_invalide.html", status=400)
+    form = EnfantForm(request.POST)
+    if form.is_valid():
+        _ajouter_enfant(parent, form.cleaned_data)
+        messages.success(request, f"Candidature ajoutée pour {form.cleaned_data['prenom_enfant']}.")
+    return redirect("espace", jeton=jeton)
 
 
 @require_POST

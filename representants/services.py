@@ -10,18 +10,17 @@ from django.urls import reverse
 
 from .models import Adherent, Candidature
 
-SEL_LIEN = "portevoix.espace"
-VALIDITE_LIEN = 365 * 24 * 3600  # un an : le lien sert toute l'année scolaire
+SIGNATAIRE = signing.Signer(salt="portevoix.espace")
 
 
 def lien_espace(parent):
-    # ponytail: lien non révocable avant expiration ; la purge annuelle supprime le parent
-    jeton = signing.dumps(parent.pk, salt=SEL_LIEN)
-    return settings.SITE_URL + reverse("espace", args=[jeton])
+    # Jeton sans horodatage : un seul lien par parent, identique dans tous les emails.
+    # ponytail: lien non révocable ; la purge annuelle supprime le parent (les pk SQLite ne sont pas réutilisés)
+    return settings.SITE_URL + reverse("espace", args=[SIGNATAIRE.sign(str(parent.pk))])
 
 
 def parent_id_depuis_jeton(jeton):
-    return signing.loads(jeton, salt=SEL_LIEN, max_age=VALIDITE_LIEN)
+    return int(SIGNATAIRE.unsign(jeton))
 
 
 def envoyer(parent, sujet, gabarit, **contexte):

@@ -65,6 +65,15 @@ class ParcoursTest(TestCase):
         self.assertEqual((cand.classe, cand.statut), (classe, "retenu"))
         self.assertIn("représentant de la 4D", mail.outbox[-1].subject)
 
+    def test_un_lien_par_parent_pour_tous_ses_enfants(self):
+        parent = Parent.objects.create(email="a@x.fr", prenom="A", nom="B", consentement_le=timezone.now())
+        lien = services.lien_espace(parent)
+        self.assertEqual(lien, services.lien_espace(parent))  # stable d'un email à l'autre
+        jeton = lien.split("/espace/")[1].rstrip("/")
+        for prenom in ("Léo", "Zoé", "léo"):  # doublon ignoré
+            self.client.post(reverse("ajouter_enfant", args=[jeton]), {"prenom_enfant": prenom, "niveau": "4"})
+        self.assertEqual(sorted(parent.candidatures.values_list("prenom_enfant", flat=True)), ["Léo", "Zoé"])
+
     def test_groupe_bureau(self):
         from django.contrib.auth.models import Group
         perms = set(Group.objects.get(name="Bureau").permissions.values_list("codename", flat=True))

@@ -28,7 +28,12 @@
   {% endfor %}
   </tbody>
 </table>
-<p><a href="{% url 'candidature' %}">Candidater pour un autre enfant</a></p>
+<h2>Candidater pour un autre enfant</h2>
+<form method="post" action="{% url 'ajouter_enfant' jeton %}">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Ajouter</button>
+</form>
 
 <section class="rgpd">
   <p>Email : {{ parent.email }} · Téléphone : {{ parent.telephone|default:"—" }} ·
